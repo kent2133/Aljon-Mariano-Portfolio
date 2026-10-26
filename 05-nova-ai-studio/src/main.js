@@ -95,6 +95,8 @@ addEventListener("resize", () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 function loop(t) {
+  const page = scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  renderer.domElement.style.opacity = String(1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94));
   const s = scrollY / innerHeight;
   const open =
     THREE.MathUtils.smoothstep(s, 0.7, 1.55) *

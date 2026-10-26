@@ -316,3 +316,6 @@ a {
     font-size: 18vw;
   }
 }
+
+/* Foreground scrollytelling layer */
+canvas{z-index:2!important;pointer-events:none;transition:opacity .25s}main{z-index:auto!important}nav{position:relative;z-index:4}.hero>* ,.numbers>* ,.story>* ,.reserve>*{position:relative;z-index:3}.story.dark .material-grid,.story.light .feature{width:56%}.story.dark .material-grid{grid-template-columns:1fr}.story>div:nth-child(2){grid-template-columns:1fr;max-width:56%}@media(max-width:760px){canvas{opacity:.5}.story.dark .material-grid,.story.light .feature,.story>div:nth-child(2){width:100%;max-width:100%}}

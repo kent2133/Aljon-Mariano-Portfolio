@@ -213,4 +213,46 @@ footer a {
 }
 
 /* Foreground scrollytelling layer */
-canvas{z-index:2!important;pointer-events:none;transition:opacity .25s}main{z-index:auto!important}nav{position:relative;z-index:4}.hero>* ,.project>* ,.gallery>* ,.work>* ,footer>*{position:relative;z-index:3}.project header,.project .columns,.project .facts{width:57%;margin-left:0;margin-right:auto}.project header{grid-template-columns:1fr}.project .columns{grid-template-columns:1fr}@media(max-width:700px){canvas{opacity:.45}.project header,.project .columns,.project .facts{width:100%}}
+canvas {
+  z-index: 2 !important;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+main {
+  z-index: auto !important;
+}
+nav {
+  position: relative;
+  z-index: 4;
+}
+.hero > *,
+.project > *,
+.gallery > *,
+.work > *,
+footer > * {
+  position: relative;
+  z-index: 3;
+}
+.project header,
+.project .columns,
+.project .facts {
+  width: 57%;
+  margin-left: 0;
+  margin-right: auto;
+}
+.project header {
+  grid-template-columns: 1fr;
+}
+.project .columns {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 700px) {
+  canvas {
+    opacity: 0.45;
+  }
+  .project header,
+  .project .columns,
+  .project .facts {
+    width: 100%;
+  }
+}

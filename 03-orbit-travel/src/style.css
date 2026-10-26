@@ -225,4 +225,51 @@ nav a {
 }
 
 /* Foreground scrollytelling layer */
-canvas{z-index:2!important;pointer-events:none;transition:opacity .25s}main{z-index:auto!important}nav{position:relative;z-index:4}.hero>* ,.ticker>* ,.journeys>* ,.experience>* ,.manifest>*{position:relative;z-index:3}.journeys>h2,.journeys>.eyebrow,.journeys>.cards,.journeys>.disclaimer{width:57%}.journeys .cards{grid-template-columns:1fr}.journeys .cards article{min-height:320px}.journeys .orb{width:120px;height:120px;margin:0 0 22px auto}@media(max-width:700px){canvas{opacity:.45}.journeys>h2,.journeys>.eyebrow,.journeys>.cards,.journeys>.disclaimer{width:100%}}
+canvas {
+  z-index: 2 !important;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+main {
+  z-index: auto !important;
+}
+nav {
+  position: relative;
+  z-index: 4;
+}
+.hero > *,
+.ticker > *,
+.journeys > *,
+.experience > *,
+.manifest > * {
+  position: relative;
+  z-index: 3;
+}
+.journeys > h2,
+.journeys > .eyebrow,
+.journeys > .cards,
+.journeys > .disclaimer {
+  width: 57%;
+}
+.journeys .cards {
+  grid-template-columns: 1fr;
+}
+.journeys .cards article {
+  min-height: 320px;
+}
+.journeys .orb {
+  width: 120px;
+  height: 120px;
+  margin: 0 0 22px auto;
+}
+@media (max-width: 700px) {
+  canvas {
+    opacity: 0.45;
+  }
+  .journeys > h2,
+  .journeys > .eyebrow,
+  .journeys > .cards,
+  .journeys > .disclaimer {
+    width: 100%;
+  }
+}

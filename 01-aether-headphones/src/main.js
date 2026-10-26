@@ -1,11 +1,35 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { setupExperience } from "./experience.js";
 import "./style.css";
 
 document.querySelector("#app").innerHTML =
   `<main><nav><b>AETHER<sup>®</sup></b><div><a href="#sound">Sound</a><a href="#craft">Craft</a><a href="#comfort">Comfort</a></div><a class="pill outline" href="#reserve">Reserve</a></nav><section class="hero"><div class="copy"><span class="kicker">AETHER ONE / SPATIAL HEADPHONES</span><h1>Feel the space<br><i>between</i> sounds.</h1><p>Reference-grade wireless headphones shaped around how humans actually hear. Precise, spacious, and quiet when the world is not.</p><div class="actions"><a class="pill lime" href="#reserve">Reserve Aether One</a><span>$549 · Ships spring 2027</span></div></div><div class="drag">DRAG TO INSPECT <span>↔</span></div><div class="scroll">SCROLL TO DISCOVER ↓</div></section><section class="numbers" id="sound"><div><strong>40<span>mm</span></strong><p>Bio-cellulose<br>dynamic drivers</p></div><div><strong>−42<span>dB</span></strong><p>Adaptive noise<br>cancellation</p></div><div><strong>52<span>hr</span></strong><p>Listening from<br>a single charge</p></div><div><strong>24<span>bit</span></strong><p>Lossless audio<br>over USB-C</p></div></section><section class="story dark" id="craft"><div class="label">01 / MATERIAL INTELLIGENCE</div><div><h2>Built to disappear.<br><em>Made to endure.</em></h2><p>Bead-blasted aluminum carries the structure. Memory foam forms a gentle seal. Every high-contact component is replaceable, so Aether One can stay with you for years.</p></div><div class="material-grid"><article><span>01</span><h3>Recycled aluminum</h3><p>A rigid, featherweight frame machined to precise tolerances.</p></article><article><span>02</span><h3>Acoustic knit</h3><p>Breathable inner mesh protects the driver without coloring sound.</p></article><article><span>03</span><h3>Protein leather</h3><p>Soft, durable cushions engineered for extended sessions.</p></article></div></section><section class="story light" id="comfort"><div class="label">02 / PERSONAL ACOUSTICS</div><div><h2>Tuned to your ears,<br>not an average.</h2><p>A rapid calibration maps the way your ears perceive space, then adapts the sound field while head tracking keeps every instrument anchored.</p></div><div class="feature"><span>PERSONAL PROFILE</span><div class="wave"></div><strong>03:24</strong></div></section><section class="reserve" id="reserve"><span class="kicker">FIRST EDITION / 500 UNITS</span><h2>Hear what<br>you've been missing.</h2><a class="pill darkpill" href="mailto:hello@example.com?subject=Aether%20One%20reservation">Join the reservation list →</a></section></main>`;
 
+setupExperience({
+  tone: 55,
+  accent: "#caff63",
+  target: "#reserve",
+  eyebrow: "03 / EVERYDAY USE",
+  title: "Made for the hours between.",
+  intro:
+    "Aether One moves from focused work to travel to late-night listening without asking you to manage the technology.",
+  items: [
+    [
+      "Conversation mode",
+      "A touch reveals voices naturally while keeping music present.",
+    ],
+    [
+      "Multipoint memory",
+      "Move between laptop, phone, and studio desk without pairing again.",
+    ],
+    [
+      "Designed to repair",
+      "Cushions, cable, battery, and headband pad are independently replaceable.",
+    ],
+  ],
+});
 const scene = new THREE.Scene(),
   camera = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 0.1, 100);
 camera.position.set(0, 0.1, 10);
@@ -152,8 +176,11 @@ addEventListener("resize", () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 function loop(t) {
-  const page = scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
-  renderer.domElement.style.opacity = String(1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94));
+  const page =
+    scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  renderer.domElement.style.opacity = String(
+    1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94),
+  );
   const s = scrollY / innerHeight,
     open =
       THREE.MathUtils.smoothstep(s, 0.72, 1.65) *
@@ -166,7 +193,10 @@ function loop(t) {
   rig.rotation.z = Math.sin(t * 0.00045) * 0.018;
   rig.position.x = innerWidth < 760 ? 0.9 : 2.25;
   rig.position.y = -Math.min(s, 0.8) * 0.55;
+  rig.position.z = Math.sin(t * 0.00065) * 0.12 - open * 0.35;
   rig.scale.setScalar(1 - open * 0.13);
+  key.position.x = -4 + Math.sin(t * 0.0004) * 2.2;
+  rim.intensity = 28 + Math.sin(t * 0.0012) * 8 + open * 12;
   note.textContent =
     open > 0.15 ? "EXPLODED VIEW / ALUMINUM · MEMORY FOAM · ACOUSTIC KNIT" : "";
   note.classList.toggle("show", open > 0.15);

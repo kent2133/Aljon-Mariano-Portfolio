@@ -1,9 +1,33 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { setupExperience } from "./experience.js";
 import "./style.css";
 document.querySelector("#app").innerHTML =
   `<main class="ui"><nav><b>VOLT//R</b><div><a href="#machine">Machine</a><a href="#performance">Performance</a><a href="#configure">Configure</a></div><a href="#reserve">RESERVE / 001</a></nav><section class="hero" id="machine"><span class="eyebrow">VOLT R-01 / ELECTRIC STREETFIGHTER</span><h1>SILENT<br><i>/ SAVAGE</i></h1><div class="herofoot"><p>Built around instant torque and nothing unnecessary. The R-01 turns electricity into a sharper kind of motion.</p><span>DRAG TO ROTATE ↔</span></div></section><section class="stats" id="performance"><div><b>2.8<span>S</span></b><small>0—100 KM/H</small></div><div><b>220<span>KM</span></b><small>URBAN RANGE*</small></div><div><b>165<span>HP</span></b><small>PEAK POWER</small></div><div><b>18<span>MIN</span></b><small>20—80% CHARGE*</small></div></section><section class="engineering"><span class="eyebrow">01 / CORE ENGINEERING</span><div><h2>Mass centralized.<br>Response amplified.</h2><p>The structural battery sits low inside a cast-aluminum frame, concentrating weight between the wheels. The result is immediate direction change without sacrificing high-speed composure.</p></div><div class="tech"><article><b>01</b><h3>Structural pack</h3><p>Liquid-cooled cells form a rigid stressed member at the motorcycle's center.</p></article><article><b>02</b><h3>Direct drive</h3><p>No clutch, no gearbox, no delay between your wrist and the rear wheel.</p></article><article><b>03</b><h3>Active recovery</h3><p>Lean-aware regeneration adapts to grip, gradient, and riding mode.</p></article></div></section><section class="config" id="configure"><div><span class="eyebrow">02 / BUILD YOUR R-01</span><h2>Choose your<br>signal.</h2><p>Tap a finish to update the motorcycle in real time.</p></div><div class="panel"><label>BODY FINISH</label><div class="swatches"><button data-color="c7ff00" class="lime" aria-label="Acid lime"></button><button data-color="aeb3b8" class="silver" aria-label="Liquid silver"></button><button data-color="ec3327" class="red" aria-label="Signal red"></button><button data-color="171717" class="black" aria-label="Carbon black"></button></div><hr><label>RIDE POSITION</label><div class="choices"><button class="selected">STREET</button><button>TRACK</button><button>TOUR</button></div><hr><p class="price">CONCEPT SPECIFICATION <b>$28,900</b></p></div></section><section class="reserve" id="reserve"><span>FOUNDERS SERIES / 001—100</span><h2>Make some<br>quiet noise.</h2><a href="mailto:ride@example.com">REQUEST A PRIVATE PREVIEW →</a><small>*Illustrative portfolio concept. Specifications are not production claims.</small></section></main>`;
+setupExperience({
+  tone: 64,
+  accent: "#c7ff00",
+  target: "#reserve",
+  eyebrow: "03 / RIDER SYSTEMS",
+  title: "Fast is only useful when it feels natural.",
+  intro:
+    "The R-01 translates complex traction, regeneration, and thermal decisions into a direct connection between rider and road.",
+  items: [
+    [
+      "Predictive traction",
+      "Wheel-speed and lean data shape torque before grip becomes drama.",
+    ],
+    [
+      "Adaptive regeneration",
+      "Brake feel remains consistent while energy recovery changes beneath it.",
+    ],
+    [
+      "Thermal reserve",
+      "Dedicated cooling preserves repeatable performance across road and track sessions.",
+    ],
+  ],
+});
 const scene = new THREE.Scene(),
   camera = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.1, 100);
 camera.position.set(0, 0.45, 10);
@@ -163,8 +187,11 @@ addEventListener("resize", () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 function loop(t) {
-  const page = scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
-  renderer.domElement.style.opacity = String(1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94));
+  const page =
+    scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  renderer.domElement.style.opacity = String(
+    1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94),
+  );
   const s = scrollY / innerHeight;
   const open =
     THREE.MathUtils.smoothstep(s, 0.72, 1.55) *
@@ -182,6 +209,13 @@ function loop(t) {
   motor.position.y = -0.28 - open * 0.25;
   frame.position.z = open * 0.55;
   bar.position.y = 1.3 + open * 0.7;
+  bike.children
+    .filter((part) => part.isGroup)
+    .forEach((wheel, i) => {
+      wheel.rotation.x = t * 0.00035 * (i ? 1 : -1) + open * 0.8;
+    });
+  key.position.x = -5 + Math.sin(t * 0.00045) * 2.5;
+  rimlight.intensity = 32 + Math.sin(t * 0.0014) * 9 + open * 14;
   note.textContent =
     open > 0.15 ? "EXPLODED POWERTRAIN / STRUCTURAL PACK · MOTOR · FRAME" : "";
   note.style.opacity = open > 0.15 ? "1" : "0";

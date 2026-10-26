@@ -1,8 +1,32 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { setupExperience } from "./experience.js";
 import "./style.css";
 document.querySelector("#app").innerHTML =
   `<main><nav><b>LUMINA<br>ARCHITECTS</b><span>MANILA / SINGAPORE</span><a href="#contact">START A PROJECT ↗</a></nav><section class="hero"><span class="tag">RESIDENTIAL / 2026</span><h1>COURTYARD<br><i>HOUSE</i></h1><div class="meta"><p>A porous family home where monsoon air, filtered light, and daily rituals move freely through a planted center.</p><span>14.5995° N<br>120.9842° E</span></div><div class="hint">DRAG TO ORBIT / SCROLL ↓</div></section><section class="project"><header><span>01 / THE BRIEF</span><h2>Less house.<br>More <em>habitat.</em></h2></header><div class="columns"><p>The clients asked for privacy without enclosure: a calm refuge for three generations on a dense urban lot.</p><p>Rooms gather around a shaded garden. Deep eaves, operable screens, and cross-ventilation reduce cooling demand while keeping the house open to weather.</p></div><div class="facts"><div><b>420 m²</b><span>GROSS FLOOR AREA</span></div><div><b>38%</b><span>PLANTED SITE AREA</span></div><div><b>2026</b><span>EXPECTED COMPLETION</span></div></div></section><section class="gallery"><div class="photo p1"><span>MORNING COURT / 07:14</span></div><div class="photo p2"><span>SCREEN STUDY / DETAIL 04</span></div></section><section class="work"><span>SELECTED WORK / 2022—26</span><article><small>01</small><h3>Courtyard House</h3><p>Manila / Residential</p></article><article><small>02</small><h3>Common Ground</h3><p>Quezon City / Workplace</p></article><article><small>03</small><h3>Tidal Library</h3><p>La Union / Civic</p></article></section><footer id="contact"><p>Have a place in mind?</p><a href="mailto:studio@example.com">studio@lumina.archi ↗</a></footer></main>`;
+setupExperience({
+  tone: 46,
+  accent: "#beff28",
+  target: "#contact",
+  eyebrow: "04 / PASSIVE PERFORMANCE",
+  title: "Comfort begins before the switch.",
+  intro:
+    "The house treats shade, air, water, and planting as architectural materials—not equipment added afterward.",
+  items: [
+    [
+      "Cross ventilation",
+      "Opposing openings and the central court establish a reliable pressure path.",
+    ],
+    [
+      "Deep shade",
+      "Layered eaves and screens reduce direct solar gain across the hottest hours.",
+    ],
+    [
+      "Rain strategy",
+      "Roof water feeds planted ground and a concealed reuse tank for dry weeks.",
+    ],
+  ],
+});
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xd8d6ce, 10, 24);
 const camera = new THREE.PerspectiveCamera(
@@ -127,9 +151,12 @@ addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
-function loop() {
-  const page = scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
-  renderer.domElement.style.opacity = String(1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94));
+function loop(t = 0) {
+  const page =
+    scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  renderer.domElement.style.opacity = String(
+    1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94),
+  );
   const s = scrollY / innerHeight,
     reveal =
       THREE.MathUtils.smoothstep(s, 0.75, 1.7) *
@@ -139,10 +166,13 @@ function loop() {
   model.position.x = innerWidth < 700 ? 1.2 : 2.1;
   model.position.y = -Math.min(s, 1) * 0.35 + reveal * 0.25;
   model.scale.setScalar(1 - reveal * 0.12);
+  sun.position.x = -5 + Math.sin(t * 0.00022) * 4;
+  sun.position.z = 6 + Math.cos(t * 0.00022) * 2;
+  glass.opacity = 0.48 + Math.sin(t * 0.0007) * 0.08;
   note.textContent =
     reveal > 0.15 ? "SECTIONAL ORBIT / CONCRETE · TIMBER · LOW-E GLASS" : "";
   note.style.opacity = reveal > 0.15 ? "1" : "0";
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }
-loop();
+requestAnimationFrame(loop);

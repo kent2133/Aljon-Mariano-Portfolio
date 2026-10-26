@@ -1,8 +1,32 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { setupExperience } from "./experience.js";
 import "./style.css";
 document.querySelector("#app").innerHTML =
   `<main class="site"><nav><b>nova—studio</b><div><a href="#services">Services</a><a href="#work">Work</a><a href="#process">Process</a></div><a class="navcta" href="#contact">START A PROJECT ↗</a></nav><section class="hero"><span class="overline">HUMAN-CENTERED AI SYSTEMS</span><h1>Less busywork.<br>More <em>forward.</em></h1><div class="herobottom"><p>We design practical AI workflows for ambitious teams—connecting scattered tools, repetitive tasks, and human judgment into systems that move.</p><div><b>23</b><span>WORKFLOWS<br>SHIPPED</span></div><div><b>4.8×</b><span>AVG. FASTER<br>TURNAROUND*</span></div></div></section><section class="marquee"><span>STRATEGY</span><i>✦</i><span>PROTOTYPING</span><i>✦</i><span>INTEGRATION</span><i>✦</i><span>ENABLEMENT</span></section><section class="services" id="services"><div><span class="overline">WHAT WE BUILD / 01—04</span><h2>Intelligence that fits the way your team works.</h2></div><div class="service-list"><article><b>01</b><h3>Knowledge systems</h3><p>Make scattered company knowledge searchable, trustworthy, and useful in the flow of work.</p><span>↗</span></article><article><b>02</b><h3>Document operations</h3><p>Extract, validate, route, and summarize high-volume documents with human review built in.</p><span>↗</span></article><article><b>03</b><h3>Customer workflows</h3><p>Give teams faster context and consistent first drafts without losing their judgment or voice.</p><span>↗</span></article><article><b>04</b><h3>Internal copilots</h3><p>Purpose-built assistants grounded in your processes, permissions, and quality standards.</p><span>↗</span></article></div></section><section class="case" id="work"><span class="overline">SELECTED SYSTEM / FIELDNOTE</span><div><h2>From six hours<br>to forty minutes.</h2><p>A research team was spending most of Monday assembling weekly market briefs. We mapped the sources, automated collection and comparison, and kept analysts in control of every conclusion.</p></div><div class="metrics"><div><b>89%</b><span>LESS PREPARATION TIME</span></div><div><b>100%</b><span>HUMAN-REVIEWED OUTPUT</span></div><div><b>3 WK</b><span>FROM MAP TO PILOT</span></div></div><small>*Illustrative portfolio case study, not a real client claim.</small></section><section class="process" id="process"><span class="overline">HOW WE WORK / NO BLACK BOXES</span><h2>Start narrow.<br>Learn quickly.<br><em>Scale what works.</em></h2><div class="steps"><article><b>01 / MAP</b><h3>Find the friction.</h3><p>We trace the real workflow with the people doing it every day.</p></article><article><b>02 / MAKE</b><h3>Prove the value.</h3><p>A focused pilot tests usefulness, risk, and adoption in weeks.</p></article><article><b>03 / MOVE</b><h3>Ship with confidence.</h3><p>Training, documentation, monitoring, and ownership come standard.</p></article></div></section><footer id="contact"><span class="overline">HAVE A STUBBORN WORKFLOW?</span><h2>Let's make it<br><em>move.</em></h2><a href="mailto:hello@example.com">HELLO@NOVA.STUDIO ↗</a></footer></main>`;
+setupExperience({
+  tone: 82,
+  accent: "#bdafff",
+  target: "#contact",
+  eyebrow: "OPERATING PRINCIPLES / 01—03",
+  title: "Useful AI earns trust in the details.",
+  intro:
+    "We make the invisible parts of an automated workflow legible: what it knows, when it acts, and where a person remains accountable.",
+  items: [
+    [
+      "Visible sources",
+      "Every important output can point back to the information that shaped it.",
+    ],
+    [
+      "Human thresholds",
+      "Teams define when the system proceeds and when it asks for judgment.",
+    ],
+    [
+      "Measured quality",
+      "Evaluation continues after launch using examples drawn from real work.",
+    ],
+  ],
+});
 const scene = new THREE.Scene(),
   camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 100);
 camera.position.z = 9;
@@ -95,8 +119,11 @@ addEventListener("resize", () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 function loop(t) {
-  const page = scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
-  renderer.domElement.style.opacity = String(1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94));
+  const page =
+    scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  renderer.domElement.style.opacity = String(
+    1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94),
+  );
   const s = scrollY / innerHeight;
   const open =
     THREE.MathUtils.smoothstep(s, 0.7, 1.55) *
@@ -104,7 +131,11 @@ function loop(t) {
   net.rotation.y += (mx + open * 0.65 - net.rotation.y) * 0.035;
   net.rotation.x += (my - open * 0.12 - net.rotation.x) * 0.035;
   net.rotation.z = t * 0.000055;
-  net.position.set(innerWidth < 700 ? 1.2 : 2, -Math.min(s, 1) * 0.38, 0);
+  net.position.set(
+    innerWidth < 700 ? 1.2 : 2,
+    -Math.min(s, 1) * 0.38 + Math.sin(t * 0.0007) * 0.08,
+    0,
+  );
   net.children
     .filter((x) => x.isMesh && !x.geometry.type.includes("Tube"))
     .forEach((n, i) =>
@@ -116,6 +147,8 @@ function loop(t) {
       tube.material.opacity =
         0.28 + open * 0.55 + Math.sin(t * 0.002 + i) * 0.08;
     });
+  key.position.x = 3 + Math.sin(t * 0.0005) * 2;
+  key.intensity = 45 + open * 25 + Math.sin(t * 0.001) * 8;
   note.textContent =
     open > 0.15
       ? "LIVE WORKFLOW / INPUT · REASONING · HUMAN REVIEW · OUTPUT"

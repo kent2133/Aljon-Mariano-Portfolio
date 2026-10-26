@@ -239,4 +239,42 @@ nav a {
 }
 
 /* Foreground scrollytelling layer */
-canvas{z-index:2!important;pointer-events:none;transition:opacity .25s}.ui{z-index:auto!important}nav{position:relative;z-index:4}.hero>* ,.stats>* ,.engineering>* ,.config>* ,.reserve>*{position:relative;z-index:3}.engineering>div:nth-child(2),.engineering>.tech{width:57%}.engineering>div:nth-child(2){grid-template-columns:1fr}.engineering>.tech{grid-template-columns:1fr}@media(max-width:700px){canvas{opacity:.45}.engineering>div:nth-child(2),.engineering>.tech{width:100%}}
+canvas {
+  z-index: 2 !important;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.ui {
+  z-index: auto !important;
+}
+nav {
+  position: relative;
+  z-index: 4;
+}
+.hero > *,
+.stats > *,
+.engineering > *,
+.config > *,
+.reserve > * {
+  position: relative;
+  z-index: 3;
+}
+.engineering > div:nth-child(2),
+.engineering > .tech {
+  width: 57%;
+}
+.engineering > div:nth-child(2) {
+  grid-template-columns: 1fr;
+}
+.engineering > .tech {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 700px) {
+  canvas {
+    opacity: 0.45;
+  }
+  .engineering > div:nth-child(2),
+  .engineering > .tech {
+    width: 100%;
+  }
+}

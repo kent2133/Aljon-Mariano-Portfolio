@@ -135,6 +135,43 @@ scene.add(new THREE.AmbientLight(0x1c3150, 1.5));
 const sun = new THREE.DirectionalLight(0xffffff, 7);
 sun.position.set(-5, 4, 6);
 scene.add(sun);
+const sunVisual = new THREE.Mesh(
+  new THREE.SphereGeometry(1.15, 48, 48),
+  new THREE.MeshBasicMaterial({ color: 0xffe8a8 }),
+);
+sunVisual.position.set(-7, 4.5, -5);
+scene.add(sunVisual);
+const sunHalo = new THREE.Mesh(
+  new THREE.SphereGeometry(1.75, 48, 48),
+  new THREE.MeshBasicMaterial({
+    color: 0xffa33b,
+    transparent: true,
+    opacity: 0.11,
+    blending: THREE.AdditiveBlending,
+    side: THREE.BackSide,
+  }),
+);
+sunVisual.add(sunHalo);
+const moonVisual = new THREE.Mesh(
+  new THREE.SphereGeometry(0.62, 48, 48),
+  new THREE.MeshStandardMaterial({ color: 0xbdbab2, roughness: 0.96 }),
+);
+moonVisual.position.set(7, -2.8, -1);
+scene.add(moonVisual);
+const orbitPath = new THREE.LineLoop(
+  new THREE.BufferGeometry().setFromPoints(
+    Array.from({ length: 96 }, (_, i) => {
+      const a = (i / 96) * Math.PI * 2;
+      return new THREE.Vector3(Math.cos(a) * 4.1, Math.sin(a) * 2.1, -1.4);
+    }),
+  ),
+  new THREE.LineBasicMaterial({
+    color: 0x9effdd,
+    transparent: true,
+    opacity: 0.18,
+  }),
+);
+scene.add(orbitPath);
 const note = document.createElement("div");
 note.style.cssText =
   "position:fixed;z-index:3;right:4vw;bottom:4vh;font:10px DM Mono;color:#9effdd;opacity:0;transition:.3s;pointer-events:none";
@@ -143,6 +180,19 @@ document.querySelector(".journeys").style.background =
   "linear-gradient(90deg,#0a101b 0 58%,#0a101bee 73%,#04070d22)";
 let mx = 0,
   my = 0;
+const stageSections = [
+  document.querySelector(".hero"),
+  document.querySelector("#journeys"),
+  document.querySelector("#experience"),
+  document.querySelector(".experience-context"),
+  document.querySelector("#manifest"),
+].filter(Boolean);
+let stage = 0;
+const stageValue = (values, value) => {
+  const lower = Math.floor(value),
+    upper = Math.min(values.length - 1, Math.ceil(value));
+  return THREE.MathUtils.lerp(values[lower], values[upper], value - lower);
+};
 addEventListener("pointermove", (e) => {
   if (e.buttons) {
     mx += e.movementX * 0.004;
@@ -155,21 +205,36 @@ addEventListener("resize", () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 function loop(t) {
-  const page =
-    scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
-  renderer.domElement.style.opacity = String(
-    1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94),
-  );
+  const targetStage = stageSections.reduce(
+    (best, section, index) => {
+      const distance = Math.abs(
+        section.getBoundingClientRect().top - innerHeight * 0.28,
+      );
+      return distance < best.distance ? { index, distance } : best;
+    },
+    { index: 0, distance: Infinity },
+  ).index;
+  stage += (targetStage - stage) * 0.035;
+  renderer.domElement.style.opacity = "1";
   const s = scrollY / innerHeight,
     open =
       THREE.MathUtils.smoothstep(s, 0.8, 1.65) *
       (1 - THREE.MathUtils.smoothstep(s, 3.3, 4.2));
-  world.rotation.y += (mx + open * 0.38 - world.rotation.y) * 0.04;
-  world.rotation.x += (my - open * 0.1 - world.rotation.x) * 0.04;
-  world.position.y = -Math.min(s, 1) * 0.45;
+  world.rotation.y +=
+    (mx +
+      open * 0.38 +
+      stageValue([0, 0.35, 0.82, 1.35, 1.8], stage) -
+      world.rotation.y) *
+    0.04;
+  world.rotation.x +=
+    (my + stageValue([0, -0.1, 0.18, -0.2, 0.05], stage) - world.rotation.x) *
+    0.04;
+  world.position.y = stageValue([0, -0.35, 0.2, -0.15, 0], stage);
   earth.rotation.y = t * 0.000035;
   clouds.rotation.y = t * 0.00005;
-  earth.scale.setScalar(1 + open * 0.16);
+  earth.scale.setScalar(
+    stageValue([1, 1.12, 0.88, 0.72, 1.18], stage) + open * 0.08,
+  );
   clouds.scale.copy(earth.scale);
   glow.scale.copy(earth.scale);
   body.position.x = -open * 0.45;
@@ -177,17 +242,45 @@ function loop(t) {
   panels.forEach(
     (p) => (p.position.y = p.userData.side * (0.53 + open * 0.52)),
   );
-  craft.position.y = 1.25 + Math.sin(t * 0.0008) * 0.12 - open * 0.25;
+  craft.position.x = stageValue([-2.5, -1.8, -0.7, 1.1, -0.2], stage);
+  craft.position.y =
+    stageValue([1.25, 0.8, 1.65, -1.15, 1.8], stage) +
+    Math.sin(t * 0.0008) * 0.12 -
+    open * 0.25;
   craft.rotation.y = open * 0.5 + Math.sin(t * 0.0004) * 0.1;
   craft.rotation.z = 0.22 + Math.sin(t * 0.00055) * 0.08;
-  camera.position.z = 9 - open * 0.7;
+  camera.position.z = stageValue([9, 8.6, 9.8, 10.4, 8.2], stage) - open * 0.35;
+  const orbitAngle = t * 0.00018 + stage * 0.8;
+  moonVisual.position.set(
+    stageValue([7, 4.5, -3.5, 1.1, 2.55], stage) + Math.cos(orbitAngle) * 0.35,
+    stageValue([-2.8, 1.8, 2.3, -1.5, -0.25], stage) +
+      Math.sin(orbitAngle) * 0.25,
+    stageValue([-1, -0.5, 0.2, -0.4, 0.5], stage),
+  );
+  moonVisual.rotation.y = t * 0.00012;
+  moonVisual.scale.setScalar(stageValue([0.5, 1, 1.35, 0.8, 1.15], stage));
+  sunVisual.position.set(
+    stageValue([-7, -4.5, 5.5, -2.5, 0.8], stage),
+    stageValue([4.5, 2.8, 1.8, -3.5, 0.5], stage),
+    stageValue([-5, -4, -3, -5, -2.5], stage),
+  );
+  sunVisual.scale.setScalar(stageValue([0.65, 0.9, 1.45, 0.7, 1.15], stage));
+  sun.intensity = stageValue([5, 7, 10, 4, 2.5], stage);
+  sun.position.copy(sunVisual.position);
+  glow.material.opacity = stageValue([1, 1, 0.65, 0.9, 1.45], stage);
+  orbitPath.rotation.z = t * 0.000035;
+  orbitPath.material.opacity = stageValue([0.05, 0.32, 0.12, 0.4, 0.08], stage);
   const starField = scene.children.find((x) => x.isPoints);
   if (starField) starField.rotation.z = t * 0.000006;
-  note.textContent =
-    open > 0.15
-      ? "FLIGHT SYSTEM / CAPSULE · SOLAR ARRAY · GUIDANCE MODULE"
-      : "";
-  note.style.opacity = open > 0.15 ? "1" : "0";
+  const stageLabels = [
+    "EARTH ORBIT / HOME FROM 408 KM",
+    "DESTINATION TRAJECTORIES / EARTH · MOON · MARS",
+    "SUNRISE SEQUENCE / 16 TIMES EACH DAY",
+    "MISSION READINESS / CREW · CAPSULE · GUIDANCE",
+    "ECLIPSE ALIGNMENT / DEPARTURE WINDOW",
+  ];
+  note.textContent = stageLabels[Math.round(stage)];
+  note.style.opacity = "1";
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }

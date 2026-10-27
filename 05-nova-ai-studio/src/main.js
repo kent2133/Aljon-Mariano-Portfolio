@@ -159,6 +159,7 @@ const stageSections = [
   document.querySelector("#contact"),
 ].filter(Boolean);
 let stage = 0;
+let announcedStage = -1;
 const layouts = [
   pts,
   [
@@ -215,6 +216,10 @@ function loop(t) {
     },
     { index: 0, distance: Infinity },
   ).index;
+  if (targetStage !== announcedStage) {
+    announcedStage = targetStage;
+    window.siteAudio?.setScene(targetStage);
+  }
   stage += (targetStage - stage) * 0.045;
   renderer.domElement.style.opacity = "1";
   net.rotation.y += (mx + stage * 0.16 - net.rotation.y) * 0.035;

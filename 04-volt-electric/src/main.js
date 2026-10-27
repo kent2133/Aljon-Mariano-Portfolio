@@ -90,7 +90,7 @@ document.querySelector("#app").innerHTML = `
   </main>
 `;
 
-setupExperience({
+const voltAudio = setupExperience({
   tone: 64,
   accent: "#c7ff00",
   target: "#reserve",
@@ -662,7 +662,7 @@ const displayedAccent = new THREE.Color(0xc7ff00);
 let interactionMessage = "";
 let interactionMessageUntil = 0;
 
-document.querySelectorAll(".swatches button").forEach((button) => {
+document.querySelectorAll(".swatches button").forEach((button, index) => {
   button.addEventListener("click", () => {
     targetColor.set(`#${button.dataset.color}`);
     document.querySelectorAll(".swatches button").forEach((item) => {
@@ -674,6 +674,10 @@ document.querySelectorAll(".swatches button").forEach((button) => {
       `${button.dataset.name.toUpperCase()} / TRANSITIONING`;
     interactionMessage = `${button.dataset.name.toUpperCase()} / PAINT MORPH`;
     interactionMessageUntil = performance.now() + 1600;
+    voltAudio.cueAction("paint", {
+      variant: index,
+      color: button.dataset.color,
+    });
     window.setTimeout(() => {
       document.querySelector("#paint-readout").textContent =
         `${button.dataset.name.toUpperCase()} / ACTIVE`;
@@ -693,6 +697,7 @@ document.querySelectorAll(".choices button").forEach((button) => {
       rideModes[rideMode].label;
     interactionMessage = `${rideMode.toUpperCase()} / ERGONOMICS SHIFT`;
     interactionMessageUntil = performance.now() + 1800;
+    voltAudio.cueAction(`ride-${rideMode}`);
   });
 });
 
@@ -705,6 +710,7 @@ let dragY = 0;
 let dragX = 0;
 let previousTime = performance.now();
 let wheelSpin = 0;
+let soundedStage = -1;
 
 const findActiveStage = () => {
   const marker = innerHeight * 0.46;
@@ -766,6 +772,10 @@ function loop(now) {
   const delta = Math.min(0.05, (now - previousTime) / 1000);
   previousTime = now;
   activeStage = findActiveStage();
+  if (activeStage !== soundedStage) {
+    soundedStage = activeStage;
+    voltAudio.cueScene(activeStage);
+  }
   stageCursor = damp(
     stageCursor,
     activeStage,

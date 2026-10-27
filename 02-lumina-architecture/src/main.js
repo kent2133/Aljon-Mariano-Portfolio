@@ -79,7 +79,7 @@ document.querySelector("#app").innerHTML = `
   </main>
 `;
 
-setupExperience({
+const siteAudio = setupExperience({
   tone: 46,
   accent: "#beff28",
   target: "#contact",
@@ -644,6 +644,7 @@ function setActiveScene(nextScene, time) {
   if (!STAGES[nextScene] || nextScene === activeScene) return;
   activeScene = nextScene;
   stageStartedAt = time;
+  siteAudio.setScene(nextScene);
   document.body.dataset.scene = nextScene;
   const stage = STAGES[nextScene];
   sceneStatus.querySelector("span").textContent = stage.index;

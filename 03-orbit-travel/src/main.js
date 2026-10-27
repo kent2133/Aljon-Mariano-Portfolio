@@ -3,7 +3,7 @@ import { setupExperience } from "./experience.js";
 import "./style.css";
 document.querySelector("#app").innerHTML =
   `<main><nav><b>ORBIT<span>°</span></b><div><a href="#journeys">Journeys</a><a href="#experience">Experience</a><a href="#manifest">Manifest</a></div><a class="book" href="#manifest">REQUEST A SEAT</a></nav><section class="hero"><span class="badge">CIVILIAN FLIGHT 07 / NOW BOARDING</span><h1>SEE HOME<br>FOR THE <i>FIRST</i><br>TIME.</h1><div class="intro"><p>Six days above everything familiar. One view that changes how you understand all of it.</p><span>DRAG TO ORBIT ↔</span></div></section><section class="ticker"><span>LOW EARTH ORBIT</span><i>✦</i><span>408 KM ALTITUDE</span><i>✦</i><span>16 SUNRISES / DAY</span><i>✦</i><span>ZERO ORDINARY DAYS</span></section><section class="journeys" id="journeys"><span class="eyebrow">CHOOSE YOUR HORIZON / 01—03</span><h2>Journeys beyond<br>the expected.</h2><div class="cards"><article><div class="orb earth"></div><small>01 / 06 DAYS</small><h3>Earthlight</h3><p>Orbit the planet in quiet comfort and see every ocean, weather system, and sunrise become one living whole.</p><b>FROM $28M*</b></article><article><div class="orb moon"></div><small>02 / 12 DAYS</small><h3>Lunar Arc</h3><p>Follow the path of Apollo, round the far side, and watch Earth rise over a landscape untouched by time.</p><b>FUTURE MISSION</b></article><article><div class="orb mars"></div><small>03 / 180+ DAYS</small><h3>Mars Transfer</h3><p>A long-horizon expedition concept for the first generation ready to make another world feel close.</p><b>IN DEVELOPMENT</b></article></div><p class="disclaimer">*Fictional portfolio concept. No real travel product or price is being offered.</p></section><section class="experience" id="experience"><div><span class="eyebrow">LIFE ABOARD</span><h2>Designed for awe.<br>Engineered for calm.</h2></div><div class="amenities"><article><b>01</b><h3>Panoramic cupola</h3><p>A 3.8-meter observation window makes the planet the center of every room.</p></article><article><b>02</b><h3>Private quarters</h3><p>Acoustic privacy, circadian lighting, and personal storage for six unhurried days.</p></article><article><b>03</b><h3>Human guidance</h3><p>Months of training and a veteran crew prepare every traveler for the extraordinary.</p></article></div></section><section class="manifest" id="manifest"><span>NEXT DEPARTURE / Q3 2027</span><h2>There are only<br>twelve windows.</h2><a href="mailto:flight@example.com">REQUEST THE PRIVATE BRIEFING →</a></section></main>`;
-setupExperience({
+const orbitAudio = setupExperience({
   tone: 38,
   accent: "#9effdd",
   target: "#manifest",
@@ -26,6 +26,7 @@ setupExperience({
     ],
   ],
 });
+globalThis.orbitAudio = orbitAudio;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   45,
@@ -188,6 +189,7 @@ const stageSections = [
   document.querySelector("#manifest"),
 ].filter(Boolean);
 let stage = 0;
+let audibleStage = -1;
 const stageValue = (values, value) => {
   const lower = Math.floor(value),
     upper = Math.min(values.length - 1, Math.ceil(value));
@@ -214,6 +216,10 @@ function loop(t) {
     },
     { index: 0, distance: Infinity },
   ).index;
+  if (targetStage !== audibleStage) {
+    audibleStage = targetStage;
+    orbitAudio.setScene(targetStage);
+  }
   stage += (targetStage - stage) * 0.035;
   renderer.domElement.style.opacity = "1";
   const s = scrollY / innerHeight,

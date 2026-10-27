@@ -93,7 +93,7 @@ document.querySelector("#app").innerHTML = `
   </main>
 `;
 
-setupExperience({
+const siteAudio = setupExperience({
   tone: 55,
   accent: "#caff63",
   target: "#reserve",
@@ -595,10 +595,11 @@ const finishPresets = {
 };
 let selectedFinish = finishPresets.midnight;
 let colorReveal = 0;
-document.querySelectorAll(".finish-option").forEach((button) => {
+document.querySelectorAll(".finish-option").forEach((button, index) => {
   button.addEventListener("click", () => {
     selectedFinish = finishPresets[button.dataset.finish];
     colorReveal = 1;
+    siteAudio.cue("finish", { variant: index });
     document.querySelector("#finish-name").textContent = selectedFinish.label;
     document.querySelectorAll(".finish-option").forEach((option) => {
       const selected = option === button;
@@ -716,6 +717,7 @@ function resize() {
 addEventListener("resize", resize);
 addEventListener("load", updateStageMeasurements);
 updateStageMeasurements();
+let audibleStage = "hero";
 
 function loop(time) {
   const blend = getStageBlend();
@@ -822,6 +824,10 @@ function loop(time) {
   rimLight.position.y = 1.2 + Math.sin(time * 0.0008) * 1.7;
 
   const noteStage = blend.mix < 0.5 ? blend.from : blend.to;
+  if (noteStage.key !== audibleStage) {
+    audibleStage = noteStage.key;
+    siteAudio.setScene(noteStage.key);
+  }
   stageNote.textContent = noteStage.note;
   stageNote.classList.toggle("is-light", noteStage.key === "comfort");
   updateCallouts(craftWeight);

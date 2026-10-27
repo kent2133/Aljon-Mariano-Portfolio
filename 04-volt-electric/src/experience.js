@@ -30,7 +30,7 @@ export function setupExperience({
   const button = document.createElement("button");
   button.className = "sound-toggle on";
   button.type = "button";
-  button.textContent = "SOUND ON / TAP TO START";
+  button.textContent = "SOUND ON / SCROLL OR TAP";
   button.setAttribute("aria-pressed", "true");
   document.body.append(button);
 
@@ -47,6 +47,8 @@ export function setupExperience({
   let currentScene = 0;
   let pendingCue = { name: "ignition", options: {} };
   let startOnlyClick = false;
+  let audioStartPromise = null;
+  let lastWakeAttemptAt = 0;
 
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   const roots = [
@@ -428,18 +430,37 @@ export function setupExperience({
     });
   };
 
+  const requestAudioStart = () => {
+    if (!active) return Promise.resolve(false);
+    if (armed && ctx?.state === "running") return Promise.resolve(true);
+    if (audioStartPromise) return audioStartPromise;
+
+    lastWakeAttemptAt = performance.now();
+    audioStartPromise = start()
+      .catch(() => false)
+      .finally(() => {
+        audioStartPromise = null;
+      });
+    return audioStartPromise;
+  };
+
   const unlock = (event) => {
     if (!armed && event.target?.closest?.(".sound-toggle")) {
       startOnlyClick = true;
     }
-    start().catch(() => {});
+    requestAudioStart();
   };
   addEventListener("pointerdown", unlock, { once: true, capture: true });
   addEventListener("keydown", unlock, { once: true, capture: true });
   addEventListener("touchstart", unlock, { once: true, capture: true });
+  addEventListener("wheel", requestAudioStart, { once: true, passive: true });
 
   button.addEventListener("click", async () => {
-    if ((!armed || ctx.state !== "running") && !(await start())) return;
+    if (
+      (!armed || ctx.state !== "running") &&
+      !(await requestAudioStart())
+    )
+      return;
     if (startOnlyClick) {
       startOnlyClick = false;
       return;
@@ -471,6 +492,13 @@ export function setupExperience({
   addEventListener(
     "scroll",
     () => {
+      if (
+        active &&
+        (!armed || ctx?.state !== "running") &&
+        performance.now() - lastWakeAttemptAt > 750
+      ) {
+        requestAudioStart();
+      }
       if (ctx && active) {
         const p =
           scrollY /

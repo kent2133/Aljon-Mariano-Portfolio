@@ -29,7 +29,7 @@ export function setupExperience({
   const button = document.createElement("button");
   button.className = "sound-toggle on";
   button.type = "button";
-  button.textContent = "SOUND ON · TAP TO START";
+  button.textContent = "SOUND ON · SCROLL OR TAP";
   button.title = "Music begins after your first interaction";
   button.setAttribute("aria-pressed", "true");
   document.body.append(button);
@@ -453,6 +453,9 @@ export function setupExperience({
   addEventListener(
     "scroll",
     () => {
+      if (active && (!context || context.state !== "running")) {
+        start().catch(() => {});
+      }
       if (!context || !active) return;
       const progress =
         scrollY /

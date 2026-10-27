@@ -28,18 +28,18 @@ export function setupExperience({
   const button = document.createElement("button");
   button.className = "sound-toggle on";
   button.type = "button";
-  button.textContent = "SOUND ON · TAP TO START";
+  button.textContent = "SOUND ON · SCROLL OR TAP";
   button.setAttribute("aria-pressed", "true");
   document.body.append(button);
 
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   const sceneProfiles = {
-    hero: { root: tone, cutoff: 1050, air: 1380, pulse: 0.86 },
-    sound: { root: tone * 1.122, cutoff: 1780, air: 2100, pulse: 0.58 },
-    craft: { root: tone * 0.89, cutoff: 820, air: 1160, pulse: 1.04 },
-    comfort: { root: tone * 1.059, cutoff: 1320, air: 1680, pulse: 0.94 },
-    context: { root: tone * 0.944, cutoff: 940, air: 1420, pulse: 0.76 },
-    reserve: { root: tone * 1.26, cutoff: 1920, air: 2340, pulse: 0.66 },
+    hero: { root: tone, cutoff: 1050, pulse: 0.86 },
+    sound: { root: tone * 1.122, cutoff: 1780, pulse: 0.58 },
+    craft: { root: tone * 0.89, cutoff: 820, pulse: 1.04 },
+    comfort: { root: tone * 1.059, cutoff: 1320, pulse: 0.94 },
+    context: { root: tone * 0.944, cutoff: 940, pulse: 0.76 },
+    reserve: { root: tone * 1.26, cutoff: 1920, pulse: 0.66 },
   };
   const chordRatios = [1, 1.498, 2, 2.378];
   const pulseSteps = [0, 7, 3, 10, 5, 12, 7, 3];
@@ -48,7 +48,6 @@ export function setupExperience({
   let musicBus;
   let sfxBus;
   let padFilter;
-  let airFilter;
   let pulseInput;
   let active = true;
   let armed = false;
@@ -113,29 +112,6 @@ export function setupExperience({
       padVoices.push({ oscillator, ratio });
     });
 
-    const airSource = ctx.createBufferSource();
-    const airGain = ctx.createGain();
-    const airPan = ctx.createStereoPanner();
-    airFilter = ctx.createBiquadFilter();
-    airSource.buffer = noiseBuffer();
-    airSource.loop = true;
-    airFilter.type = "bandpass";
-    airFilter.frequency.value = sceneProfiles.hero.air;
-    airFilter.Q.value = 0.42;
-    airGain.gain.value = 0.042;
-    airSource
-      .connect(airFilter)
-      .connect(airGain)
-      .connect(airPan)
-      .connect(musicBus);
-    const spatialLfo = ctx.createOscillator();
-    const spatialDepth = ctx.createGain();
-    spatialLfo.frequency.value = 0.055;
-    spatialDepth.gain.value = 0.72;
-    spatialLfo.connect(spatialDepth).connect(airPan.pan);
-    airSource.start();
-    spatialLfo.start();
-
     pulseInput = ctx.createGain();
     const echo = ctx.createDelay(1.2);
     const feedback = ctx.createGain();
@@ -162,14 +138,13 @@ export function setupExperience({
   }
 
   function updateMusicScene(sceneName) {
-    if (!ctx || !padFilter || !airFilter) return;
+    if (!ctx || !padFilter) return;
     const profile = sceneProfiles[sceneName] || sceneProfiles.hero;
     const now = ctx.currentTime;
     padVoices.forEach(({ oscillator, ratio }) => {
       oscillator.frequency.setTargetAtTime(profile.root * ratio, now, 0.75);
     });
     padFilter.frequency.setTargetAtTime(profile.cutoff, now, 0.7);
-    airFilter.frequency.setTargetAtTime(profile.air, now, 0.85);
   }
 
   function musicPulse() {
@@ -462,6 +437,7 @@ export function setupExperience({
   addEventListener(
     "scroll",
     () => {
+      if (active && (!ctx || ctx.state !== "running")) start();
       if (ctx && active && padFilter) {
         const page =
           scrollY /

@@ -39,7 +39,6 @@ export function setupExperience({
     reverbInput,
     droneFilter,
     chordFilter,
-    airFilter,
     noiseBuffer,
     arpeggioTimer,
     arpeggioStep = 0,
@@ -195,7 +194,7 @@ export function setupExperience({
     button.textContent = active
       ? armed
         ? "SOUND ON"
-        : "SOUND ON · TAP TO START"
+        : "SOUND ON · SCROLL OR TAP"
       : "SOUND OFF";
     button.setAttribute("aria-pressed", String(active));
   };
@@ -386,7 +385,6 @@ export function setupExperience({
     reverbInput = ctx.createGain();
     droneFilter = ctx.createBiquadFilter();
     chordFilter = ctx.createBiquadFilter();
-    airFilter = ctx.createBiquadFilter();
     noiseBuffer = makeNoiseBuffer();
     master.gain.value = 0.0001;
     musicBus.gain.value = 0.5;
@@ -406,12 +404,8 @@ export function setupExperience({
     droneFilter.Q.value = 0.75;
     chordFilter.type = "lowpass";
     chordFilter.Q.value = 0.5;
-    airFilter.type = "bandpass";
-    airFilter.frequency.value = 1050;
-    airFilter.Q.value = 0.45;
     droneFilter.connect(musicBus);
     chordFilter.connect(musicBus);
-    airFilter.connect(musicBus);
     [
       ["sine", 0.105],
       ["triangle", 0.042],
@@ -440,25 +434,12 @@ export function setupExperience({
       oscillator.start();
       chordVoices.push(oscillator);
     });
-    const air = ctx.createBufferSource();
-    const airGain = ctx.createGain();
-    air.buffer = noiseBuffer;
-    air.loop = true;
-    airGain.gain.value = 0.017;
-    air.connect(airFilter).connect(airGain).connect(musicBus);
-    air.start();
     const filterLfo = ctx.createOscillator();
     const filterDepth = ctx.createGain();
     filterLfo.frequency.value = 0.027;
     filterDepth.gain.value = 105;
     filterLfo.connect(filterDepth).connect(droneFilter.frequency);
     filterLfo.start();
-    const airLfo = ctx.createOscillator();
-    const airDepth = ctx.createGain();
-    airLfo.frequency.value = 0.041;
-    airDepth.gain.value = 0.006;
-    airLfo.connect(airDepth).connect(airGain.gain);
-    airLfo.start();
     retuneScene(currentScene, true);
     arpeggioTimer = window.setInterval(() => {
       if (!isAudible() || document.hidden) return;
@@ -530,6 +511,16 @@ export function setupExperience({
   };
   addEventListener("pointerdown", unlock, { once: true, capture: true });
   addEventListener("keydown", unlock, { once: true, capture: true });
+  addEventListener("wheel", unlock, {
+    once: true,
+    passive: true,
+    capture: true,
+  });
+  addEventListener("scroll", unlock, {
+    once: true,
+    passive: true,
+    capture: true,
+  });
 
   button.addEventListener("click", async () => {
     if (!armed) {
@@ -556,22 +547,6 @@ export function setupExperience({
         blip(tone * (3.2 + (i % 4) * 0.55), 0.075),
       );
   });
-  addEventListener(
-    "scroll",
-    () => {
-      if (ctx && active && airFilter) {
-        const p =
-          scrollY /
-          Math.max(1, document.documentElement.scrollHeight - innerHeight);
-        airFilter.frequency.setTargetAtTime(
-          720 + p * 1050,
-          ctx.currentTime,
-          0.25,
-        );
-      }
-    },
-    { passive: true },
-  );
   addEventListener("pointerdown", (e) => {
     if (!e.target.closest("a,button,input"))
       document.body.classList.add("is-dragging");

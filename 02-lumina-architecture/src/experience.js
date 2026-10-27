@@ -28,7 +28,7 @@ export function setupExperience({
   const button = document.createElement("button");
   button.className = "sound-toggle on";
   button.type = "button";
-  button.textContent = "SOUND ON · TAP TO START";
+  button.textContent = "SOUND ON · SCROLL OR TAP";
   button.setAttribute("aria-pressed", "true");
   document.body.append(button);
 
@@ -504,6 +504,7 @@ export function setupExperience({
   addEventListener(
     "scroll",
     () => {
+      if (active && (!ctx || ctx.state !== "running")) start();
       if (ctx && active && padFilter) {
         const page =
           scrollY /

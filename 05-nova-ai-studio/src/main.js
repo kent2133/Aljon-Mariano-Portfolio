@@ -40,6 +40,9 @@ const pm = new THREE.PMREMGenerator(renderer);
 scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
 const net = new THREE.Group();
 scene.add(net);
+const nodes = [],
+  tubes = [],
+  packets = [];
 const pts = [
   [-2.4, 1.1, 0],
   [-1.1, 2, -0.5],
@@ -69,6 +72,8 @@ pts.forEach((p, i) => {
     i === 8 ? violet : pearl,
   );
   node.position.set(...p);
+  node.userData.home = new THREE.Vector3(...p);
+  nodes.push(node);
   net.add(node);
   if (i !== 8) {
     const curve = new THREE.CatmullRomCurve3([
@@ -84,8 +89,44 @@ pts.forEach((p, i) => {
         opacity: 0.5,
       }),
     );
+    tubes.push(tube);
     net.add(tube);
   }
+});
+for (let i = 0; i < 8; i++) {
+  const packet = new THREE.Mesh(
+    new THREE.SphereGeometry(0.045, 12, 12),
+    new THREE.MeshBasicMaterial({ color: 0xc9bcff }),
+  );
+  packets.push(packet);
+  net.add(packet);
+}
+const reviewRing = new THREE.Mesh(
+  new THREE.TorusGeometry(1.05, 0.035, 12, 80),
+  new THREE.MeshBasicMaterial({
+    color: 0xcaff55,
+    transparent: true,
+    opacity: 0,
+  }),
+);
+reviewRing.position.set(0, 0.15, 0.75);
+net.add(reviewRing);
+const liveLinks = Array.from({ length: 8 }, () => {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(new Float32Array(6), 3),
+  );
+  const line = new THREE.Line(
+    geometry,
+    new THREE.LineBasicMaterial({
+      color: 0xbdafff,
+      transparent: true,
+      opacity: 0.55,
+    }),
+  );
+  net.add(line);
+  return line;
 });
 const dustGeo = new THREE.BufferGeometry(),
   dust = new Float32Array(450);
@@ -109,6 +150,52 @@ document.querySelector(".services").style.background =
   "linear-gradient(90deg,#211e24 0 57%,#211e24ed 72%,#211e2422)";
 let mx = 0,
   my = 0;
+const stageSections = [
+  document.querySelector(".hero"),
+  document.querySelector("#services"),
+  document.querySelector("#work"),
+  document.querySelector("#process"),
+  document.querySelector(".experience-context"),
+  document.querySelector("#contact"),
+].filter(Boolean);
+let stage = 0;
+const layouts = [
+  pts,
+  [
+    [-2.4, 1.4, 0],
+    [-0.8, 1.4, 0.2],
+    [0.8, 1.4, -0.2],
+    [2.4, 1.4, 0],
+    [-2.4, -1, 0.1],
+    [-0.8, -1, -0.2],
+    [0.8, -1, 0.2],
+    [2.4, -1, -0.1],
+    [0, 0.2, 0.9],
+  ],
+  pts.map((_, i) => [-3 + i * 0.75, Math.sin(i * 0.9) * 0.42, (i % 2) * 0.25]),
+  pts.map((_, i) => [
+    -2 + (i % 3) * 2,
+    1.35 - Math.floor(i / 3) * 1.25,
+    (i % 2) * 0.35,
+  ]),
+  pts.map((_, i) => {
+    const a = (i / pts.length) * Math.PI * 2;
+    return [Math.cos(a) * 2.25, Math.sin(a) * 2.25, i === 8 ? 0.9 : 0];
+  }),
+  pts.map((_, i) => [pts[i][0] * 0.18, pts[i][1] * 0.18, pts[i][2] * 0.18]),
+];
+const sampleLayout = (index, value) => {
+  const lo = Math.floor(value),
+    hi = Math.min(layouts.length - 1, Math.ceil(value)),
+    mix = value - lo;
+  const a = layouts[lo][index],
+    b = layouts[hi][index];
+  return new THREE.Vector3(
+    THREE.MathUtils.lerp(a[0], b[0], mix),
+    THREE.MathUtils.lerp(a[1], b[1], mix),
+    THREE.MathUtils.lerp(a[2], b[2], mix),
+  );
+};
 addEventListener("pointermove", (e) => {
   mx = (e.clientX / innerWidth - 0.5) * 0.7;
   my = (e.clientY / innerHeight - 0.5) * 0.4;
@@ -119,41 +206,78 @@ addEventListener("resize", () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 function loop(t) {
-  const page =
-    scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
-  renderer.domElement.style.opacity = String(
-    1 - THREE.MathUtils.smoothstep(page, 0.82, 0.94),
-  );
-  const s = scrollY / innerHeight;
-  const open =
-    THREE.MathUtils.smoothstep(s, 0.7, 1.55) *
-    (1 - THREE.MathUtils.smoothstep(s, 3.35, 4.25));
-  net.rotation.y += (mx + open * 0.65 - net.rotation.y) * 0.035;
-  net.rotation.x += (my - open * 0.12 - net.rotation.x) * 0.035;
+  const targetStage = stageSections.reduce(
+    (best, section, index) => {
+      const distance = Math.abs(
+        section.getBoundingClientRect().top - innerHeight * 0.28,
+      );
+      return distance < best.distance ? { index, distance } : best;
+    },
+    { index: 0, distance: Infinity },
+  ).index;
+  stage += (targetStage - stage) * 0.045;
+  renderer.domElement.style.opacity = "1";
+  net.rotation.y += (mx + stage * 0.16 - net.rotation.y) * 0.035;
+  net.rotation.x += (my - stage * 0.025 - net.rotation.x) * 0.035;
   net.rotation.z = t * 0.000055;
-  net.position.set(
-    innerWidth < 700 ? 1.2 : 2,
-    -Math.min(s, 1) * 0.38 + Math.sin(t * 0.0007) * 0.08,
-    0,
-  );
-  net.children
-    .filter((x) => x.isMesh && !x.geometry.type.includes("Tube"))
-    .forEach((n, i) =>
-      n.scale.setScalar(1 + open * 0.5 + Math.sin(t * 0.0018 + i) * 0.08),
+  net.position.set(innerWidth < 700 ? 1.2 : 2, Math.sin(t * 0.0007) * 0.08, 0);
+  nodes.forEach((node, i) => {
+    node.position.lerp(sampleLayout(i, stage), 0.075);
+    const processPulse =
+      Math.round(stage) === 3
+        ? Math.max(0, Math.sin(t * 0.003 - (i % 3) * 1.4)) * 0.32
+        : 0;
+    node.scale.setScalar(1 + processPulse + Math.sin(t * 0.0018 + i) * 0.07);
+  });
+  tubes.forEach((tube, i) => {
+    tube.material.opacity =
+      (0.14 + Math.max(0, Math.sin(t * 0.0025 - i * 0.45)) * 0.55) *
+      (1 - THREE.MathUtils.smoothstep(stage, 0.15, 0.75));
+    tube.scale.setScalar(Math.max(0.18, 1 - stage * 0.08));
+  });
+  liveLinks.forEach((line, i) => {
+    const positions = line.geometry.attributes.position.array;
+    positions.set([
+      nodes[i].position.x,
+      nodes[i].position.y,
+      nodes[i].position.z,
+      nodes[8].position.x,
+      nodes[8].position.y,
+      nodes[8].position.z,
+    ]);
+    line.geometry.attributes.position.needsUpdate = true;
+    line.material.opacity = 0.22 + Math.max(0, Math.sin(t * 0.002 - i)) * 0.42;
+  });
+  packets.forEach((packet, i) => {
+    const source = nodes[i],
+      destination = nodes[8],
+      progress = (t * 0.00018 + i / packets.length) % 1;
+    packet.position.lerpVectors(
+      source.position,
+      destination.position,
+      progress,
     );
-  net.children
-    .filter((x) => x.geometry?.type?.includes("Tube"))
-    .forEach((tube, i) => {
-      tube.material.opacity =
-        0.28 + open * 0.55 + Math.sin(t * 0.002 + i) * 0.08;
-    });
+    packet.position.z += Math.sin(progress * Math.PI) * 0.65;
+    packet.scale.setScalar(0.65 + Math.sin(progress * Math.PI) * 0.75);
+  });
+  reviewRing.position.copy(nodes[8].position);
+  reviewRing.material.opacity =
+    THREE.MathUtils.smoothstep(stage, 3.55, 4.05) *
+    (1 - THREE.MathUtils.smoothstep(stage, 4.65, 5));
+  reviewRing.rotation.z = t * 0.00035;
+  reviewRing.rotation.x = Math.sin(t * 0.0004) * 0.35;
   key.position.x = 3 + Math.sin(t * 0.0005) * 2;
-  key.intensity = 45 + open * 25 + Math.sin(t * 0.001) * 8;
-  note.textContent =
-    open > 0.15
-      ? "LIVE WORKFLOW / INPUT · REASONING · HUMAN REVIEW · OUTPUT"
-      : "";
-  note.style.opacity = open > 0.15 ? "1" : "0";
+  key.intensity = 45 + stage * 5 + Math.sin(t * 0.001) * 8;
+  const labels = [
+    "CONNECTED SYSTEM / PEOPLE · TOOLS · KNOWLEDGE",
+    "SERVICE CLUSTERS / SEARCH · DOCUMENTS · CUSTOMERS · COPILOTS",
+    "FIELDNOTE PIPELINE / SIX HOURS → FORTY MINUTES",
+    "DELIVERY LOOP / MAP · MAKE · MOVE",
+    "HUMAN REVIEW / VISIBLE SOURCES · DECISION THRESHOLDS",
+    "CONVERGENCE / LET'S MAKE IT MOVE",
+  ];
+  note.textContent = labels[Math.round(stage)];
+  note.style.opacity = "1";
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }

@@ -17,6 +17,7 @@ app.innerHTML = `
       <a href="#about">About</a>
       <a href="#experience">Experience</a>
       <a href="#capabilities">Stack</a>
+      <a href="#portfolio">Portfolio</a>
       <a href="#work">Work</a>
       <a class="mobile-contact-link" href="#contact">Contact</a>
     </nav>
@@ -33,14 +34,14 @@ app.innerHTML = `
         <h1>I build the<br><em>systems</em> behind<br>good work.</h1>
         <p class="hero-intro">Programmer, web developer, and IT specialist turning real operational needs into clear, dependable digital tools.</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#work">Explore selected work <span>↓</span></a>
+          <a class="button button-primary" href="#portfolio">Explore the portfolio <span>↓</span></a>
           <a class="button button-ghost" href="mailto:aljonmariano44@gmail.com">Start a conversation <span>↗</span></a>
         </div>
       </div>
       <div class="hero-index" aria-hidden="true">
         <span>01</span>
         <div></div>
-        <small>06</small>
+        <small>07</small>
       </div>
       <a class="scroll-cue" href="#about"><span>Scroll to connect</span><i></i></a>
     </section>
@@ -128,9 +129,86 @@ app.innerHTML = `
       </div>
     </section>
 
-    <section class="work scene-section" id="work" data-scene="work" data-index="05">
+    <section class="portfolio scene-section" id="portfolio" data-scene="portfolio" data-index="05">
+      <header class="portfolio-heading reveal">
+        <p class="section-number">05 / Interactive portfolio</p>
+        <h2>Five ideas.<br><em>Built to move.</em></h2>
+        <p>Five original Three.js concepts spanning product, architecture, travel, mobility, and AI—each shaped around its own visual language and interaction model.</p>
+      </header>
+
+      <div class="portfolio-grid">
+        <article class="showcase-card showcase-card-featured">
+          <a class="showcase-visual" href="https://eather-headphones.vercel.app/" target="_blank" rel="noreferrer" aria-label="Open the live Aether One headphones website">
+            <img src="/portfolio/aether.png" alt="Aether One spatial headphones website hero" width="1200" height="750" loading="lazy">
+            <span class="showcase-index">01 / AUDIO</span>
+            <span class="showcase-open">Open live site ↗</span>
+          </a>
+          <div class="showcase-copy">
+            <div><p>Product experience</p><h3>Aether One</h3></div>
+            <p>Spatial headphones revealed through scroll choreography, material callouts, color finishes, and an exploded component view.</p>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/01-aether-headphones" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="showcase-card">
+          <a class="showcase-visual" href="https://lumina-architecture-aljon1.vercel.app/" target="_blank" rel="noreferrer" aria-label="Open the live Lumina Architecture website">
+            <img src="/portfolio/lumina.png" alt="Lumina Architecture website hero" width="1200" height="750" loading="lazy">
+            <span class="showcase-index">02 / SPACE</span>
+            <span class="showcase-open">Open live site ↗</span>
+          </a>
+          <div class="showcase-copy">
+            <div><p>Architecture studio</p><h3>Lumina</h3></div>
+            <p>A quiet architectural case study where a house assembles by section and light becomes part of the narrative.</p>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/02-lumina-architecture" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="showcase-card">
+          <a class="showcase-visual" href="https://orbit-travel-aljon1.vercel.app/" target="_blank" rel="noreferrer" aria-label="Open the live Orbit space travel website">
+            <img src="/portfolio/orbit.png" alt="Orbit space travel website hero" width="1200" height="750" loading="lazy">
+            <span class="showcase-index">03 / ORBIT</span>
+            <span class="showcase-open">Open live site ↗</span>
+          </a>
+          <div class="showcase-copy">
+            <div><p>Space tourism</p><h3>Orbit</h3></div>
+            <p>An editorial journey through Earth, moon, and sunlight with a cinematic celestial system that changes on scroll.</p>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/03-orbit-travel" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="showcase-card">
+          <a class="showcase-visual" href="https://volt-electric-aljon1.vercel.app/" target="_blank" rel="noreferrer" aria-label="Open the live Volt R electric motorcycle website">
+            <img src="/portfolio/volt.png" alt="Volt R electric motorcycle website hero" width="1200" height="750" loading="lazy">
+            <span class="showcase-index">04 / MOTION</span>
+            <span class="showcase-open">Open live site ↗</span>
+          </a>
+          <div class="showcase-copy">
+            <div><p>Vehicle configurator</p><h3>Volt R</h3></div>
+            <p>An electric motorcycle concept with animated finishes, selectable ride positions, and section-driven mechanical states.</p>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/04-volt-electric" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="showcase-card">
+          <a class="showcase-visual" href="https://nova-ai-studio-aljon1.vercel.app/" target="_blank" rel="noreferrer" aria-label="Open the live Nova AI Studio website">
+            <img src="/portfolio/nova.png" alt="Nova AI Studio website hero" width="1200" height="750" loading="lazy">
+            <span class="showcase-index">05 / SYSTEMS</span>
+            <span class="showcase-open">Open live site ↗</span>
+          </a>
+          <div class="showcase-copy">
+            <div><p>AI studio</p><h3>Nova Studio</h3></div>
+            <p>A bold automation studio built around a modular workflow core, service states, and expressive scroll transitions.</p>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/05-nova-ai-studio" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+      </div>
+
+      <p class="portfolio-footnote reveal">All five are original portfolio concepts designed and developed as interactive front-end experiences.</p>
+    </section>
+
+    <section class="work scene-section" id="work" data-scene="work" data-index="06">
       <div class="work-heading reveal">
-        <p class="section-number">05 / Selected systems</p>
+        <p class="section-number">06 / Selected systems</p>
         <h2>Work made<br><em>to be used.</em></h2>
       </div>
       <div class="project-list reveal">
@@ -157,9 +235,9 @@ app.innerHTML = `
       </div>
     </section>
 
-    <section class="contact scene-section" id="contact" data-scene="contact" data-index="06">
+    <section class="contact scene-section" id="contact" data-scene="contact" data-index="07">
       <div class="contact-inner reveal">
-        <p class="section-number">06 / Open channel</p>
+        <p class="section-number">07 / Open channel</p>
         <h2>Have a system<br>that should work<br><em>better?</em></h2>
         <p class="contact-lead">I am open to developer and IT opportunities, project collaborations, and conversations about useful digital work.</p>
         <div class="contact-links">
@@ -341,8 +419,8 @@ for (let index = 0; index < 6; index += 1) {
   nodePivots.push({ pivot, node });
 }
 
-const cardPalette = [cobalt, graphite, ivory, graphite];
-for (let index = 0; index < 4; index += 1) {
+const cardPalette = [cobalt, graphite, ivory, graphite, lime];
+for (let index = 0; index < 5; index += 1) {
   const card = roundedBox(2.15, 1.24, 0.1, 0.12, cardPalette[index], dataCards);
   card.position.set(0.24 * index, 0.19 * index, -0.42 - 0.16 * index);
   card.rotation.z = -0.03 * index;
@@ -401,6 +479,12 @@ const SCENES = {
     detail: "Interface · Application · Data",
     world: [2.82, 0.05, 0], rotation: [-0.02, -0.18, 0], scale: 0.78,
     camera: [5.1, 0.5, 11.6], monogram: 0.38, terminal: 0.34, rail: 1.2, nodes: 1.48, cards: 0.25,
+  },
+  portfolio: {
+    title: "Portfolio constellation",
+    detail: "Five concept sites · Five visual systems",
+    world: [2.95, -0.08, -0.15], rotation: [0.04, -0.46, 0.025], scale: 0.76,
+    camera: [5.65, 0.55, 11.7], monogram: 0.3, terminal: 0.48, rail: 0.72, nodes: 0.62, cards: 2.1,
   },
   work: {
     title: "Selected systems",
@@ -527,7 +611,7 @@ class SoundEngine {
 
   sceneCue(index) {
     if (!this.started) return;
-    const roots = [146.83, 164.81, 123.47, 185, 110, 196];
+    const roots = [146.83, 164.81, 123.47, 185, 220, 110, 196];
     const root = roots[index] || 146.83;
     this.tone(root, 0, 0.34, 0.065, "sine", this.master);
     this.tone(root * 1.5, 0.08, 0.48, 0.04, "triangle", this.master);
@@ -654,7 +738,7 @@ window.addEventListener("keydown", (event) => {
 });
 
 function canDrag(target) {
-  return !target.closest("a, button, input, textarea, select, .project-card, .timeline, .stack-groups");
+  return !target.closest("a, button, input, textarea, select, .project-card, .showcase-card, .timeline, .stack-groups");
 }
 
 window.addEventListener("pointerdown", (event) => {
@@ -766,11 +850,11 @@ function animate() {
     if (!card.userData.cardIndex && card.userData.cardIndex !== 0) return;
     const cardIndex = card.userData.cardIndex;
     const spread = current.cards;
-    card.position.x = (cardIndex - 1.5) * 0.86 * spread;
-    card.position.y = (1.5 - cardIndex) * 0.52 * spread;
+    card.position.x = (cardIndex - 2) * 0.72 * spread;
+    card.position.y = (2 - cardIndex) * 0.42 * spread;
     card.position.z = -0.5 + cardIndex * 0.38 * spread;
-    card.rotation.y = (cardIndex - 1.5) * -0.11 * spread;
-    card.rotation.z = (cardIndex - 1.5) * 0.04 * spread;
+    card.rotation.y = (cardIndex - 2) * -0.09 * spread;
+    card.rotation.z = (cardIndex - 2) * 0.035 * spread;
   });
   dataCards.visible = current.cards > 0.03;
 

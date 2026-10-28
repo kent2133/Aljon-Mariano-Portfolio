@@ -88,7 +88,7 @@ document.querySelector("#app").innerHTML = `
       <span class="kicker">FIRST EDITION / 500 CONCEPT UNITS</span>
       <h2>Hear what<br>you've been missing.</h2>
       <p>The complete assembly returns for one last close look in the finish you selected.</p>
-      <a class="pill darkpill" href="mailto:hello@example.com?subject=Aether%20One%20reservation">Join the reservation list <span>&rarr;</span></a>
+      <a class="pill darkpill" href="https://aljon-mariano-contact.vercel.app/" aria-label="Meet the developer, Aljon Mariano">Meet the developer <span>&rarr;</span></a>
     </section>
   </main>
 `;

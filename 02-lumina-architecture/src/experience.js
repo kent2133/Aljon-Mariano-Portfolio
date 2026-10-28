@@ -34,12 +34,12 @@ export function setupExperience({
 
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   const sceneProfiles = {
-    hero: { root: tone, warmth: 760, air: 940, cadence: 1.28 },
-    brief: { root: tone * 1.059, warmth: 920, air: 1180, cadence: 1.08 },
-    gallery: { root: tone * 1.122, warmth: 1280, air: 1720, cadence: 0.9 },
-    work: { root: tone * 0.89, warmth: 680, air: 880, cadence: 1.18 },
-    performance: { root: tone * 0.944, warmth: 1060, air: 1480, cadence: 0.82 },
-    contact: { root: tone * 0.793, warmth: 560, air: 720, cadence: 1.46 },
+    hero: { root: tone, warmth: 760, cadence: 1.28 },
+    brief: { root: tone * 1.059, warmth: 920, cadence: 1.08 },
+    gallery: { root: tone * 1.122, warmth: 1280, cadence: 0.9 },
+    work: { root: tone * 0.89, warmth: 680, cadence: 1.18 },
+    performance: { root: tone * 0.944, warmth: 1060, cadence: 0.82 },
+    contact: { root: tone * 0.793, warmth: 560, cadence: 1.46 },
   };
   const chordRatios = [1, 1.498, 2.245];
   const cadenceNotes = [0, 7, 12, 4, 9, 14, 7, 2];
@@ -50,7 +50,6 @@ export function setupExperience({
   let roomVerb;
   let roomVerbGain;
   let padFilter;
-  let airFilter;
   let active = true;
   let armed = false;
   let currentScene = "hero";
@@ -60,23 +59,6 @@ export function setupExperience({
   let starting;
   let announced = false;
   const padVoices = [];
-
-  function noiseBuffer(seconds = 2.8, decay = 0) {
-    const length = Math.floor(ctx.sampleRate * seconds);
-    const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
-    for (let channel = 0; channel < 2; channel += 1) {
-      const data = buffer.getChannelData(channel);
-      let smoothed = 0;
-      for (let index = 0; index < length; index += 1) {
-        smoothed = smoothed * 0.96 + (Math.random() * 2 - 1) * 0.04;
-        const envelope = decay
-          ? (1 - index / length) ** decay
-          : 0.72 + Math.sin((index / length) * Math.PI) * 0.28;
-        data[index] = smoothed * envelope * 1.8;
-      }
-    }
-    return buffer;
-  }
 
   function createAudioGraph() {
     ctx = new AudioContextClass();
@@ -96,10 +78,16 @@ export function setupExperience({
     sfxBus.connect(master);
     master.connect(compressor).connect(ctx.destination);
 
-    roomVerb = ctx.createConvolver();
-    roomVerb.buffer = noiseBuffer(2.4, 2.8);
+    roomVerb = ctx.createDelay(0.8);
+    roomVerb.delayTime.value = 0.16;
+    const roomFeedback = ctx.createGain();
+    const roomFilter = ctx.createBiquadFilter();
+    roomFeedback.gain.value = 0.2;
+    roomFilter.type = "lowpass";
+    roomFilter.frequency.value = 1850;
+    roomVerb.connect(roomFilter).connect(roomFeedback).connect(roomVerb);
     roomVerbGain = ctx.createGain();
-    roomVerbGain.gain.value = 0.16;
+    roomVerbGain.gain.value = 0.13;
     roomVerb.connect(roomVerbGain).connect(master);
 
     padFilter = ctx.createBiquadFilter();
@@ -121,24 +109,6 @@ export function setupExperience({
       padVoices.push({ oscillator, ratio });
     });
 
-    const air = ctx.createBufferSource();
-    const airLevel = ctx.createGain();
-    const airPan = ctx.createStereoPanner();
-    airFilter = ctx.createBiquadFilter();
-    air.buffer = noiseBuffer();
-    air.loop = true;
-    airFilter.type = "bandpass";
-    airFilter.frequency.value = sceneProfiles.hero.air;
-    airFilter.Q.value = 0.34;
-    airLevel.gain.value = 0.038;
-    air.connect(airFilter).connect(airLevel).connect(airPan).connect(musicBus);
-    const breeze = ctx.createOscillator();
-    const breezeDepth = ctx.createGain();
-    breeze.frequency.value = 0.038;
-    breezeDepth.gain.value = 0.55;
-    breeze.connect(breezeDepth).connect(airPan.pan);
-    air.start();
-    breeze.start();
   }
 
   function setMasterLevel(isOn, duration = 0.45) {
@@ -152,14 +122,13 @@ export function setupExperience({
   }
 
   function updateMusicScene(sceneName) {
-    if (!ctx || !padFilter || !airFilter) return;
+    if (!ctx || !padFilter) return;
     const profile = sceneProfiles[sceneName] || sceneProfiles.hero;
     const now = ctx.currentTime;
     padVoices.forEach(({ oscillator, ratio }) => {
       oscillator.frequency.setTargetAtTime(profile.root * ratio, now, 0.9);
     });
     padFilter.frequency.setTargetAtTime(profile.warmth, now, 0.75);
-    airFilter.frequency.setTargetAtTime(profile.air, now, 0.9);
     roomVerbGain.gain.setTargetAtTime(
       sceneName === "contact" ? 0.24 : 0.16,
       now,
@@ -232,7 +201,7 @@ export function setupExperience({
     }, profile.cadence * 1000);
   }
 
-  function airSweep({
+  function tonalSweep({
     duration = 0.45,
     volume = 0.08,
     frequency = 420,
@@ -241,20 +210,17 @@ export function setupExperience({
     pan = 0,
   } = {}) {
     const now = ctx.currentTime + delay;
-    const source = ctx.createBufferSource();
-    const filter = ctx.createBiquadFilter();
+    const source = ctx.createOscillator();
     const gain = ctx.createGain();
     const stereo = ctx.createStereoPanner();
-    source.buffer = noiseBuffer(Math.max(duration, 0.3), 0.7);
-    filter.type = "bandpass";
-    filter.Q.value = 0.66;
-    filter.frequency.setValueAtTime(frequency, now);
-    filter.frequency.exponentialRampToValueAtTime(end, now + duration);
+    source.type = "sine";
+    source.frequency.setValueAtTime(Math.max(55, frequency), now);
+    source.frequency.exponentialRampToValueAtTime(Math.max(55, end), now + duration);
     stereo.pan.value = pan;
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(volume, now + 0.018);
+    gain.gain.exponentialRampToValueAtTime(volume * 0.72, now + 0.018);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-    source.connect(filter).connect(gain).connect(stereo);
+    source.connect(gain).connect(stereo);
     stereo.connect(sfxBus);
     stereo.connect(roomVerb);
     source.start(now);
@@ -275,7 +241,7 @@ export function setupExperience({
     oscillator.connect(gain).connect(stereo).connect(sfxBus);
     oscillator.start(now);
     oscillator.stop(now + 0.24);
-    airSweep({
+    tonalSweep({
       duration: 0.12,
       volume: strength * 0.34,
       frequency: 280,
@@ -321,14 +287,14 @@ export function setupExperience({
       return;
     }
     if (sceneName === "gallery") {
-      airSweep({
+      tonalSweep({
         duration: 0.82,
         volume: 0.1,
         frequency: 520,
         end: 4100,
         pan: -0.5,
       });
-      airSweep({
+      tonalSweep({
         duration: 0.82,
         volume: 0.075,
         frequency: 620,
@@ -350,7 +316,7 @@ export function setupExperience({
       return;
     }
     if (sceneName === "work") {
-      airSweep({ duration: 0.72, volume: 0.085, frequency: 2400, end: 390 });
+      tonalSweep({ duration: 0.72, volume: 0.085, frequency: 2400, end: 390 });
       [0, 0.13, 0.28, 0.45].forEach((delay, index) =>
         impact({
           delay,
@@ -361,14 +327,14 @@ export function setupExperience({
       return;
     }
     if (sceneName === "performance") {
-      airSweep({
+      tonalSweep({
         duration: 1.15,
         volume: 0.11,
         frequency: 350,
         end: 2800,
         pan: -0.62,
       });
-      airSweep({
+      tonalSweep({
         duration: 1.15,
         volume: 0.08,
         frequency: 480,
@@ -390,7 +356,7 @@ export function setupExperience({
       return;
     }
     if (sceneName === "contact") {
-      airSweep({ duration: 1.2, volume: 0.06, frequency: 1500, end: 360 });
+      tonalSweep({ duration: 1.2, volume: 0.06, frequency: 1500, end: 360 });
       [0, 4, 7, 11].forEach((semitone, index) =>
         pluck({
           frequency: tone * 3 * 2 ** (semitone / 12),
@@ -404,7 +370,7 @@ export function setupExperience({
       );
       return;
     }
-    airSweep({ duration: 0.62, volume: 0.07, frequency: 430, end: 1800 });
+    tonalSweep({ duration: 0.62, volume: 0.07, frequency: 430, end: 1800 });
     [0, 7, 12].forEach((semitone, index) =>
       pluck({
         frequency: tone * 3.2 * 2 ** (semitone / 12),

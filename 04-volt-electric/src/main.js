@@ -84,7 +84,7 @@ document.querySelector("#app").innerHTML = `
     <section class="reserve story-section" id="reserve" data-stage="5">
       <span>FOUNDERS SERIES / 001—100</span>
       <h2>Make some<br>quiet noise.</h2>
-      <a href="mailto:ride@example.com">REQUEST A PRIVATE PREVIEW →</a>
+      <a href="https://aljon-mariano-contact.vercel.app/" aria-label="Meet the developer, Aljon Mariano">MEET THE DEVELOPER →</a>
       <small>*Illustrative portfolio concept. Specifications are not production claims.</small>
     </section>
   </main>

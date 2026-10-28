@@ -73,7 +73,7 @@ document.querySelector("#app").innerHTML = `
       <div class="footer-copy">
         <span>05 / BEGIN A CONVERSATION</span>
         <p>Have a place<br>in mind?</p>
-        <a href="mailto:studio@example.com">studio@lumina.archi ↗</a>
+        <a href="https://aljon-mariano-contact.vercel.app/" aria-label="Contact Aljon Mariano">Contact Aljon ↗</a>
       </div>
     </footer>
   </main>

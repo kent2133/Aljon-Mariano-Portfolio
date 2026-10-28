@@ -17,7 +17,8 @@ app.innerHTML = `
       <a href="#about">About</a>
       <a href="#experience">Experience</a>
       <a href="#capabilities">Stack</a>
-      <a href="#portfolio">Portfolio</a>
+      <a href="#portfolio">Sites</a>
+      <a href="#systems">Systems</a>
       <a href="#work">Work</a>
       <a class="mobile-contact-link" href="#contact">Contact</a>
     </nav>
@@ -41,7 +42,7 @@ app.innerHTML = `
       <div class="hero-index" aria-hidden="true">
         <span>01</span>
         <div></div>
-        <small>07</small>
+        <small>08</small>
       </div>
       <a class="scroll-cue" href="#about"><span>Scroll to connect</span><i></i></a>
     </section>
@@ -97,7 +98,7 @@ app.innerHTML = `
           </li>
           <li>
             <time>Industry training</time>
-            <div><h3>OJT System Developer</h3><p>Benguet Provincial Capitol</p></div>
+            <div><h3>OJT System Developer</h3><p>Provincial government office</p></div>
             <span>Foundation</span>
           </li>
         </ol>
@@ -130,8 +131,13 @@ app.innerHTML = `
     </section>
 
     <section class="portfolio scene-section" id="portfolio" data-scene="portfolio" data-index="05">
+      <nav class="portfolio-categories reveal" aria-label="Portfolio categories">
+        <span>Explore by collection</span>
+        <a class="is-active" href="#portfolio"><i>01</i> Interactive landing pages</a>
+        <a href="#systems"><i>02</i> Full-stack business systems</a>
+      </nav>
       <header class="portfolio-heading reveal">
-        <p class="section-number">05 / Interactive portfolio</p>
+        <p class="section-number">05 / Interactive landing pages</p>
         <h2>Five ideas.<br><em>Built to move.</em></h2>
         <p>Five original Three.js concepts spanning product, architecture, travel, mobility, and AI—each shaped around its own visual language and interaction model.</p>
       </header>
@@ -203,13 +209,129 @@ app.innerHTML = `
         </article>
       </div>
 
-      <p class="portfolio-footnote reveal">All five are original portfolio concepts designed and developed as interactive front-end experiences.</p>
+      <p class="portfolio-footnote reveal">Collection 01 — Original front-end concepts designed around motion, storytelling, and responsive 3D interaction.</p>
     </section>
 
-    <section class="work scene-section" id="work" data-scene="work" data-index="06">
+    <section class="systems scene-section" id="systems" data-scene="systems" data-index="06">
+      <header class="systems-heading reveal">
+        <div>
+          <p class="section-number">06 / Full-stack business systems</p>
+          <h2>Real workflows.<br><em>Working software.</em></h2>
+        </div>
+        <p>Five role-aware applications built as one connected operations suite. Each demo combines a focused interface with server routes, permissions, validation, and an auditable workflow.</p>
+      </header>
+
+      <div class="systems-signal reveal" aria-label="Operations Suite architecture">
+        <span>Next.js application layer</span><i></i><span>Signed role sessions</span><i></i><span>Validated API routes</span><i></i><span>Optional Supabase persistence</span>
+      </div>
+
+      <div class="systems-grid">
+        <article class="system-card system-card-featured system-pulsedesk">
+          <a class="system-visual" href="https://aljon-operations-suite.vercel.app/pulsedesk" target="_blank" rel="noreferrer" aria-label="Open the PulseDesk service operations system">
+            <div class="system-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>PulseDesk / Service Operations</strong></div>
+              <div class="pulse-dashboard">
+                <div class="mini-sidebar"><b>PD</b><i></i><i></i><i></i><i></i></div>
+                <div class="pulse-main">
+                  <div class="metric-strip"><span><small>Open tickets</small><strong>24</strong></span><span><small>At risk</small><strong>06</strong></span><span><small>SLA health</small><strong>91%</strong></span></div>
+                  <div class="ticket-board"><span><i></i><b>Network access</b><small>High priority</small></span><span><i></i><b>Payroll login</b><small>Assigned</small></span><span><i></i><b>Device setup</b><small>In progress</small></span></div>
+                </div>
+              </div>
+            </div>
+            <span class="system-open">Launch live system ↗</span>
+          </a>
+          <div class="system-copy">
+            <div><p>Service operations</p><h3>PulseDesk</h3></div>
+            <p>A ticket command center for requesters, technicians, and administrators, with SLA health, ownership, status transitions, and an audit trail.</p>
+            <ul><li>Role-based workflows</li><li>SLA monitoring</li><li>Server actions</li></ul>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/07-operations-suite/app/pulsedesk" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="system-card system-stockflow">
+          <a class="system-visual" href="https://aljon-operations-suite.vercel.app/stockflow" target="_blank" rel="noreferrer" aria-label="Open the StockFlow inventory system">
+            <div class="system-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>StockFlow / Inventory</strong></div>
+              <div class="stock-dashboard">
+                <div class="stock-ring"><strong>84</strong><small>health</small></div>
+                <div class="stock-lines"><span><b>Sensor kit</b><i style="--fill: 82%"></i></span><span><b>Field radio</b><i style="--fill: 46%"></i></span><span><b>Safety pack</b><i style="--fill: 68%"></i></span></div>
+              </div>
+            </div>
+            <span class="system-open">Launch live system ↗</span>
+          </a>
+          <div class="system-copy">
+            <div><p>Inventory & procurement</p><h3>StockFlow</h3></div>
+            <p>Inventory control, purchase orders, receiving, and replenishment signals brought into one warehouse workspace.</p>
+            <ul><li>Stock health</li><li>Purchase orders</li><li>Receiving flow</li></ul>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/07-operations-suite/app/stockflow" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="system-card system-approve">
+          <a class="system-visual" href="https://aljon-operations-suite.vercel.app/approve" target="_blank" rel="noreferrer" aria-label="Open the Approve request governance system">
+            <div class="system-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>Approve / Governance</strong></div>
+              <div class="approval-dashboard">
+                <div class="approval-path"><span class="done">1</span><i></i><span class="done">2</span><i></i><span>3</span></div>
+                <div class="approval-card"><small>Purchase request</small><strong>Field equipment refresh</strong><span>Awaiting final approval</span></div>
+              </div>
+            </div>
+            <span class="system-open">Launch live system ↗</span>
+          </a>
+          <div class="system-copy">
+            <div><p>Request governance</p><h3>Approve</h3></div>
+            <p>A structured approval lane for submitters, reviewers, and final approvers, with visible context at every decision.</p>
+            <ul><li>Approval stages</li><li>Decision history</li><li>Permission gates</li></ul>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/07-operations-suite/app/approve" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="system-card system-carequeue">
+          <a class="system-visual" href="https://aljon-operations-suite.vercel.app/carequeue" target="_blank" rel="noreferrer" aria-label="Open the CareQueue service queue system">
+            <div class="system-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>CareQueue / Service Flow</strong></div>
+              <div class="queue-dashboard">
+                <div class="now-serving"><small>Now serving</small><strong>A–104</strong><span>Desk 03</span></div>
+                <div class="queue-list"><span><b>A–105</b><small>08 min</small></span><span><b>A–106</b><small>12 min</small></span><span><b>B–031</b><small>15 min</small></span></div>
+              </div>
+            </div>
+            <span class="system-open">Launch live system ↗</span>
+          </a>
+          <div class="system-copy">
+            <div><p>Service queue</p><h3>CareQueue</h3></div>
+            <p>A clear client journey from check-in to service completion, with reception and provider views for coordinated care.</p>
+            <ul><li>Live queue</li><li>Client intake</li><li>Provider handoff</li></ul>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/07-operations-suite/app/carequeue" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="system-card system-routeops">
+          <a class="system-visual" href="https://aljon-operations-suite.vercel.app/routeops" target="_blank" rel="noreferrer" aria-label="Open the RouteOps field dispatch system">
+            <div class="system-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>RouteOps / Dispatch</strong></div>
+              <div class="route-dashboard">
+                <div class="route-map"><span class="route-line"></span><i class="pin-one"></i><i class="pin-two"></i><i class="pin-three"></i></div>
+                <div class="route-jobs"><span><i></i><b>Install / 09:30</b></span><span><i></i><b>Repair / 11:15</b></span><span><i></i><b>Inspect / 14:00</b></span></div>
+              </div>
+            </div>
+            <span class="system-open">Launch live system ↗</span>
+          </a>
+          <div class="system-copy">
+            <div><p>Field dispatch</p><h3>RouteOps</h3></div>
+            <p>Map-led dispatch for assigning work, balancing technician capacity, and tracking field jobs from queue to completion.</p>
+            <ul><li>Dispatch board</li><li>Technician load</li><li>Job lifecycle</li></ul>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/07-operations-suite/app/routeops" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+      </div>
+
+      <p class="systems-footnote reveal"><span>One suite / five focused products</span> Demo roles make every workflow explorable; optional Supabase configuration adds durable cloud data.</p>
+    </section>
+
+    <section class="work scene-section" id="work" data-scene="work" data-index="07">
       <div class="work-heading reveal">
-        <p class="section-number">06 / Selected systems</p>
-        <h2>Work made<br><em>to be used.</em></h2>
+        <p class="section-number">07 / Professional projects</p>
+        <h2>Professional<br><em>projects.</em></h2>
       </div>
       <div class="project-list reveal">
         <article class="project-card">
@@ -219,7 +341,7 @@ app.innerHTML = `
         </article>
         <article class="project-card">
           <div class="project-number">02</div>
-          <div><p class="project-type">Operations / reservations</p><h3>Lakbay Reservation App</h3><p>A vehicle and facility reservation system built for the Benguet Provincial Capitol.</p></div>
+          <div><p class="project-type">Operations / reservations</p><h3>Lakbay Reservation App</h3><p>A vehicle and facility reservation system built for public-sector operations.</p></div>
           <span class="project-glyph">LKB</span>
         </article>
         <article class="project-card">
@@ -235,9 +357,9 @@ app.innerHTML = `
       </div>
     </section>
 
-    <section class="contact scene-section" id="contact" data-scene="contact" data-index="07">
+    <section class="contact scene-section" id="contact" data-scene="contact" data-index="08">
       <div class="contact-inner reveal">
-        <p class="section-number">07 / Open channel</p>
+        <p class="section-number">08 / Open channel</p>
         <h2>Have a system<br>that should work<br><em>better?</em></h2>
         <p class="contact-lead">I am open to developer and IT opportunities, project collaborations, and conversations about useful digital work.</p>
         <div class="contact-links">
@@ -486,9 +608,15 @@ const SCENES = {
     world: [2.95, -0.08, -0.15], rotation: [0.04, -0.46, 0.025], scale: 0.76,
     camera: [5.65, 0.55, 11.7], monogram: 0.3, terminal: 0.48, rail: 0.72, nodes: 0.62, cards: 2.1,
   },
+  systems: {
+    title: "Operations network",
+    detail: "Five products · One full-stack foundation",
+    world: [0.15, -0.05, -0.4], rotation: [-0.04, -0.08, 0.015], scale: 0.68,
+    camera: [0.45, 0.35, 12.8], monogram: 0.2, terminal: 0.38, rail: 1.42, nodes: 1.18, cards: 1.5,
+  },
   work: {
-    title: "Selected systems",
-    detail: "Four project layers loaded",
+    title: "Professional projects",
+    detail: "Four real-world project layers",
     world: [-3.12, -0.2, 0], rotation: [0.02, 0.5, 0.025], scale: 0.74,
     camera: [-5.7, 0.55, 11.5], monogram: 0.25, terminal: 0.62, rail: 0.55, nodes: 0.45, cards: 1.7,
   },
@@ -611,7 +739,7 @@ class SoundEngine {
 
   sceneCue(index) {
     if (!this.started) return;
-    const roots = [146.83, 164.81, 123.47, 185, 220, 110, 196];
+    const roots = [146.83, 164.81, 123.47, 185, 220, 246.94, 110, 196];
     const root = roots[index] || 146.83;
     this.tone(root, 0, 0.34, 0.065, "sine", this.master);
     this.tone(root * 1.5, 0.08, 0.48, 0.04, "triangle", this.master);
@@ -738,7 +866,7 @@ window.addEventListener("keydown", (event) => {
 });
 
 function canDrag(target) {
-  return !target.closest("a, button, input, textarea, select, .project-card, .showcase-card, .timeline, .stack-groups");
+  return !target.closest("a, button, input, textarea, select, .project-card, .showcase-card, .system-card, .timeline, .stack-groups");
 }
 
 window.addEventListener("pointerdown", (event) => {
@@ -850,11 +978,19 @@ function animate() {
     if (!card.userData.cardIndex && card.userData.cardIndex !== 0) return;
     const cardIndex = card.userData.cardIndex;
     const spread = current.cards;
-    card.position.x = (cardIndex - 2) * 0.72 * spread;
-    card.position.y = (2 - cardIndex) * 0.42 * spread;
-    card.position.z = -0.5 + cardIndex * 0.38 * spread;
-    card.rotation.y = (cardIndex - 2) * -0.09 * spread;
-    card.rotation.z = (cardIndex - 2) * 0.035 * spread;
+    const systemLayout = [
+      [-2.3, 1.35, -0.15], [0, 0.2, 0.5], [2.3, 1.35, -0.15], [-1.55, -1.55, -0.35], [1.55, -1.55, -0.35],
+    ];
+    const targetCardX = activeScene === "systems" ? systemLayout[cardIndex][0] * spread : (cardIndex - 2) * 0.72 * spread;
+    const targetCardY = activeScene === "systems" ? systemLayout[cardIndex][1] * spread : (2 - cardIndex) * 0.42 * spread;
+    const targetCardZ = activeScene === "systems" ? systemLayout[cardIndex][2] * spread : -0.5 + cardIndex * 0.38 * spread;
+    const targetCardRotationY = activeScene === "systems" ? (cardIndex - 2) * -0.045 : (cardIndex - 2) * -0.09 * spread;
+    const targetCardRotationZ = activeScene === "systems" ? 0 : (cardIndex - 2) * 0.035 * spread;
+    card.position.x = damp(card.position.x, targetCardX, 4.4, delta);
+    card.position.y = damp(card.position.y, targetCardY, 4.4, delta);
+    card.position.z = damp(card.position.z, targetCardZ, 4.4, delta);
+    card.rotation.y = damp(card.rotation.y, targetCardRotationY, 4.4, delta);
+    card.rotation.z = damp(card.rotation.z, targetCardRotationZ, 4.4, delta);
   });
   dataCards.visible = current.cards > 0.03;
 

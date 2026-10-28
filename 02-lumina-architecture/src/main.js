@@ -61,7 +61,7 @@ document.querySelector("#app").innerHTML = `
 
     <section class="work" id="work" data-scene="work">
       <div class="work-panel">
-        <span>03 / SELECTED WORK / 2022—26</span>
+        <span>03 / SELECTED WORK / 2022-26</span>
         <p class="work-intro">Three studies in climate, material, and collective life. The model separates into its architectural layers as you enter this index.</p>
         <article><small>01</small><h3>Courtyard House</h3><p>Manila / Residential</p></article>
         <article><small>02</small><h3>Common Ground</h3><p>Quezon City / Workplace</p></article>
@@ -86,7 +86,7 @@ const siteAudio = setupExperience({
   eyebrow: "04 / PASSIVE PERFORMANCE",
   title: "Comfort begins before the switch.",
   intro:
-    "The house treats shade, air, water, and planting as architectural materials—not equipment added afterward. Follow the moving air paths through the courtyard model.",
+    "The house treats shade, air, water, and planting as architectural materials - not equipment added afterward. Follow the moving air paths through the courtyard model.",
   items: [
     [
       "Cross ventilation",

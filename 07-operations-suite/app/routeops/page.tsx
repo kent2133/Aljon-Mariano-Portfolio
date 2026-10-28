@@ -10,11 +10,11 @@ type JobStatus = "Unassigned" | "En route" | "On site" | "Complete";
 type Job = { id: string; customer: string; service: string; address: string; status: JobStatus; eta: string; technician: string; window: string; x: number; y: number; priority: "Standard" | "Urgent" };
 
 const initialJobs: Job[] = [
-  { id: "WO-2048", customer: "Mira Foods", service: "Cold-room sensor fault", address: "Ortigas Center, Pasig", status: "On site", eta: "10:28", technician: "Paolo Diaz", window: "10:00–11:00", x: 63, y: 31, priority: "Urgent" },
-  { id: "WO-2049", customer: "Northbank Dental", service: "Network access point", address: "BGC, Taguig", status: "En route", eta: "10:46", technician: "Mika Torres", window: "10:30–12:00", x: 74, y: 62, priority: "Standard" },
-  { id: "WO-2050", customer: "Common Ground", service: "Preventive maintenance", address: "Makati City", status: "Unassigned", eta: "—", technician: "Unassigned", window: "13:00–15:00", x: 46, y: 71, priority: "Standard" },
-  { id: "WO-2046", customer: "Aster Hotel", service: "Door controller replacement", address: "Mandaluyong City", status: "Complete", eta: "09:52", technician: "Jules Ramos", window: "09:00–10:30", x: 47, y: 42, priority: "Standard" },
-  { id: "WO-2051", customer: "Fieldstone Labs", service: "Backup power inspection", address: "Quezon City", status: "Unassigned", eta: "—", technician: "Unassigned", window: "14:00–16:00", x: 29, y: 23, priority: "Urgent" },
+  { id: "WO-2048", customer: "Mira Foods", service: "Cold-room sensor fault", address: "Ortigas Center, Pasig", status: "On site", eta: "10:28", technician: "Paolo Diaz", window: "10:00-11:00", x: 63, y: 31, priority: "Urgent" },
+  { id: "WO-2049", customer: "Northbank Dental", service: "Network access point", address: "BGC, Taguig", status: "En route", eta: "10:46", technician: "Mika Torres", window: "10:30-12:00", x: 74, y: 62, priority: "Standard" },
+  { id: "WO-2050", customer: "Common Ground", service: "Preventive maintenance", address: "Makati City", status: "Unassigned", eta: "-", technician: "Unassigned", window: "13:00-15:00", x: 46, y: 71, priority: "Standard" },
+  { id: "WO-2046", customer: "Aster Hotel", service: "Door controller replacement", address: "Mandaluyong City", status: "Complete", eta: "09:52", technician: "Jules Ramos", window: "09:00-10:30", x: 47, y: 42, priority: "Standard" },
+  { id: "WO-2051", customer: "Fieldstone Labs", service: "Backup power inspection", address: "Quezon City", status: "Unassigned", eta: "-", technician: "Unassigned", window: "14:00-16:00", x: 29, y: 23, priority: "Urgent" },
 ];
 
 const technicians = [

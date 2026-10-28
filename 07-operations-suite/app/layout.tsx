@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Operations Suite — Five Full-Stack Business Systems", template: "%s — Operations Suite" },
+  title: { default: "Operations Suite - Five Full-Stack Business Systems", template: "%s - Operations Suite" },
   description: "A portfolio suite of five role-based business systems designed and developed by Aljon Mariano.",
 };
 

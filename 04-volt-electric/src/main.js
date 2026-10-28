@@ -33,10 +33,10 @@ document.querySelector("#app").innerHTML = `
         <h2>Velocity,<br>without the noise.</h2>
       </div>
       <div class="stat-grid">
-        <div><b>2.8<span>S</span></b><small>0—100 KM/H</small></div>
+        <div><b>2.8<span>S</span></b><small>0-100 KM/H</small></div>
         <div><b>220<span>KM</span></b><small>URBAN RANGE*</small></div>
         <div><b>165<span>HP</span></b><small>PEAK POWER</small></div>
-        <div><b>18<span>MIN</span></b><small>20—80% CHARGE*</small></div>
+        <div><b>18<span>MIN</span></b><small>20-80% CHARGE*</small></div>
       </div>
     </section>
 
@@ -82,7 +82,7 @@ document.querySelector("#app").innerHTML = `
     </section>
 
     <section class="reserve story-section" id="reserve" data-stage="5">
-      <span>FOUNDERS SERIES / 001—100</span>
+      <span>FOUNDERS SERIES / 001-100</span>
       <h2>Make some<br>quiet noise.</h2>
       <a href="https://aljon-mariano-contact.vercel.app/" aria-label="Meet the developer, Aljon Mariano">MEET THE DEVELOPER →</a>
       <small>*Illustrative portfolio concept. Specifications are not production claims.</small>

@@ -60,7 +60,7 @@ app.innerHTML = `
             <p>From public-service programs to reservation platforms and business websites, I care about code that stays understandable, interfaces that feel direct, and solutions grounded in the people using them.</p>
           </div>
           <dl class="credential-grid">
-            <div><dt>Degree</dt><dd>BSIT — Web Development<br><small>University of the Cordilleras, 2024</small></dd></div>
+            <div><dt>Degree</dt><dd>BSIT - Web Development<br><small>University of the Cordilleras, 2024</small></dd></div>
             <div><dt>Eligibility</dt><dd>Career Service Professional<br><small>Civil Service eligibility, 2023</small></dd></div>
             <div><dt>Base</dt><dd>Philippines-based<br><small>Open to opportunities</small></dd></div>
           </dl>
@@ -77,22 +77,22 @@ app.innerHTML = `
         </header>
         <ol class="timeline reveal">
           <li class="is-current">
-            <time>Feb 2026 — Present</time>
-            <div><h3>Database Manager</h3><p>DENR — Cordillera Administrative Region</p></div>
+            <time>Feb 2026 - Present</time>
+            <div><h3>Database Manager</h3><p>DENR - Cordillera Administrative Region</p></div>
             <span>Current</span>
           </li>
           <li>
-            <time>Feb — Dec 2025</time>
-            <div><h3>Programmer / TUPAD Coordinator</h3><p>DOLE — Cordillera Administrative Region</p></div>
+            <time>Feb - Dec 2025</time>
+            <div><h3>Programmer / TUPAD Coordinator</h3><p>DOLE - Cordillera Administrative Region</p></div>
             <span>Public service</span>
           </li>
           <li>
-            <time>Nov 2024 — Present</time>
+            <time>Nov 2024 - Present</time>
             <div><h3>Project-based Developer</h3><p>Goldsphere I.T. Solutions</p></div>
             <span>Systems</span>
           </li>
           <li>
-            <time>Feb — Mar 2024</time>
+            <time>Feb - Mar 2024</time>
             <div><h3>Freelance Web Developer</h3><p>GMC Trading</p></div>
             <span>Web</span>
           </li>
@@ -109,7 +109,7 @@ app.innerHTML = `
       <header class="capability-heading reveal">
         <p class="section-number">04 / Capability matrix</p>
         <h2>From interface<br>to <em>infrastructure.</em></h2>
-        <p>Practical, full-stack tools selected around the problem—not the trend.</p>
+        <p>Practical, full-stack tools selected around the problem - not the trend.</p>
       </header>
       <div class="stack-groups reveal">
         <article>
@@ -139,7 +139,7 @@ app.innerHTML = `
       <header class="portfolio-heading reveal">
         <p class="section-number">05 / Interactive landing pages</p>
         <h2>Five ideas.<br><em>Built to move.</em></h2>
-        <p>Five original Three.js concepts spanning product, architecture, travel, mobility, and AI—each shaped around its own visual language and interaction model.</p>
+        <p>Five original Three.js concepts spanning product, architecture, travel, mobility, and AI - each shaped around its own visual language and interaction model.</p>
       </header>
 
       <div class="portfolio-grid">
@@ -209,7 +209,7 @@ app.innerHTML = `
         </article>
       </div>
 
-      <p class="portfolio-footnote reveal">Collection 01 — Original front-end concepts designed around motion, storytelling, and responsive 3D interaction.</p>
+      <p class="portfolio-footnote reveal">Collection 01 - Original front-end concepts designed around motion, storytelling, and responsive 3D interaction.</p>
     </section>
 
     <section class="systems scene-section" id="systems" data-scene="systems" data-index="06">
@@ -291,8 +291,8 @@ app.innerHTML = `
             <div class="system-window">
               <div class="window-bar"><span></span><span></span><span></span><strong>CareQueue / Service Flow</strong></div>
               <div class="queue-dashboard">
-                <div class="now-serving"><small>Now serving</small><strong>A–104</strong><span>Desk 03</span></div>
-                <div class="queue-list"><span><b>A–105</b><small>08 min</small></span><span><b>A–106</b><small>12 min</small></span><span><b>B–031</b><small>15 min</small></span></div>
+                <div class="now-serving"><small>Now serving</small><strong>A-104</strong><span>Desk 03</span></div>
+                <div class="queue-list"><span><b>A-105</b><small>08 min</small></span><span><b>A-106</b><small>12 min</small></span><span><b>B-031</b><small>15 min</small></span></div>
               </div>
             </div>
             <span class="system-open">Launch live system ↗</span>

@@ -90,7 +90,7 @@ const seededRequests: ApprovalRequest[] = [
     summary: "Install guardrails, marked pedestrian lanes, and emergency lighting in the south warehouse.",
     evidence: [
       { name: "Site inspection.pdf", type: "PDF · signed", size: "3.2 MB", state: "Verified" },
-      { name: "Final quotation", type: "Required evidence", size: "—", state: "Missing" },
+      { name: "Final quotation", type: "Required evidence", size: "-", state: "Missing" },
     ],
   },
   {

@@ -9,18 +9,18 @@
 .rails path { stroke: rgba(83,216,255,.38); stroke-dasharray: 2.5 2; animation: dash 9s linear infinite; }
 .panel { position: absolute; width: clamp(118px, 13vw, 170px); min-height: 100px; padding: 14px; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; color: #eef3ef; background: linear-gradient(145deg, rgba(28,35,39,.95), rgba(15,18,21,.78)); box-shadow: 0 28px 70px rgba(0,0,0,.28); backdrop-filter: blur(12px); transform: translateZ(var(--z)); transform-style: preserve-3d; animation: float 5s ease-in-out var(--delay) infinite; }
 .panel > div { display: flex; align-items: center; justify-content: space-between; }
-.panel > div span { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 6px; color: #0f1417; background: #53d8ff; font-family: var(--mono); font-size: 7px; font-weight: 900; }
+.panel > div span { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 6px; color: #0f1417; background: #53d8ff; font-family: var(--mono); font-size: 10px; font-weight: 900; }
 .panel:nth-of-type(3n) > div span { background: #b8f34a; }.panel:nth-of-type(4n) > div span { background: #a98cff; }.panel:nth-of-type(5n) > div span { background: #ffb547; }
 .panel > div i { width: 5px; height: 5px; border-radius: 50%; background: #7eea91; box-shadow: 0 0 9px #7eea91; }
-.panel small { display: block; margin-top: 16px; color: #687278; font-family: var(--mono); font-size: 6px; letter-spacing: .12em; }
+.panel small { display: block; margin-top: 16px; color: #687278; font-family: var(--mono); font-size: 10px; letter-spacing: .12em; }
 .panel strong { display: block; margin-top: 5px; font-size: 17px; font-weight: 520; letter-spacing: -.04em; }
-.panel > b { position: absolute; right: 11px; bottom: 9px; color: #424b51; font-family: var(--mono); font-size: 7px; }
+.panel > b { position: absolute; right: 11px; bottom: 9px; color: #424b51; font-family: var(--mono); font-size: 10px; }
 .core { position: absolute; top: 50%; left: 50%; display: grid; width: 104px; height: 104px; place-items: center; border: 1px solid rgba(83,216,255,.36); border-radius: 50%; color: #eef3ef; background: radial-gradient(circle, rgba(83,216,255,.22), rgba(14,18,21,.95) 65%); box-shadow: 0 0 55px rgba(83,216,255,.14), inset 0 0 22px rgba(83,216,255,.1); transform: translate(-50%,-50%) translateZ(148px); transform-style: preserve-3d; }
 .core::before, .core::after { position: absolute; border: 1px solid rgba(83,216,255,.19); border-radius: 50%; content: ""; animation: orbit 12s linear infinite; }.core::before { inset: -19px; }.core::after { inset: -35px; animation-direction: reverse; animation-duration: 18s; }
 .core > span { position: absolute; top: -22px; left: 44px; width: 7px; height: 7px; border-radius: 50%; background: #b8f34a; box-shadow: 0 0 12px #b8f34a; }
 .core > i { position: absolute; inset: 22px; border: 1px dashed rgba(255,255,255,.22); border-radius: 50%; animation: orbit 10s linear infinite; }
-.core strong { margin-top: 3px; font-family: var(--mono); font-size: 17px; letter-spacing: .12em; }.core small { position: absolute; bottom: 25px; color: #6f7b81; font-family: var(--mono); font-size: 5px; letter-spacing: .16em; }
-.hint { position: absolute; right: 18px; bottom: 16px; display: flex; align-items: center; gap: 8px; color: #6d777c; font-family: var(--mono); font-size: 7px; letter-spacing: .08em; text-transform: uppercase; }.hint span { width: 5px; height: 5px; border-radius: 50%; background: #53d8ff; box-shadow: 0 0 8px #53d8ff; }
+.core strong { margin-top: 3px; font-family: var(--mono); font-size: 17px; letter-spacing: .12em; }.core small { position: absolute; bottom: 25px; color: #6f7b81; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; }
+.hint { position: absolute; right: 18px; bottom: 16px; display: flex; align-items: center; gap: 8px; color: #6d777c; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }.hint span { width: 5px; height: 5px; border-radius: 50%; background: #53d8ff; box-shadow: 0 0 8px #53d8ff; }
 @keyframes float { 50% { transform: translateZ(var(--z)) translateY(-7px); } }
 @keyframes orbit { to { transform: rotate(360deg); } }
 @keyframes dash { to { stroke-dashoffset: -30; } }

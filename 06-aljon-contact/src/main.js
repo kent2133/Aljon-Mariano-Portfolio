@@ -681,27 +681,6 @@ class SoundEngine {
     this.musicGain.gain.value = 0.11;
     this.musicGain.connect(this.master);
     this.master.connect(this.context.destination);
-
-    const low = this.context.createOscillator();
-    const upper = this.context.createOscillator();
-    const lowGain = this.context.createGain();
-    const upperGain = this.context.createGain();
-    const filter = this.context.createBiquadFilter();
-    low.type = "sine";
-    upper.type = "triangle";
-    low.frequency.value = 55;
-    upper.frequency.value = 82.41;
-    lowGain.gain.value = 0.06;
-    upperGain.gain.value = 0.018;
-    filter.type = "lowpass";
-    filter.frequency.value = 420;
-    filter.Q.value = 0.4;
-    low.connect(lowGain).connect(filter);
-    upper.connect(upperGain).connect(filter);
-    filter.connect(this.musicGain);
-    low.start();
-    upper.start();
-    this.drone = [low, upper];
   }
 
   beginMusic() {
@@ -725,32 +704,34 @@ class SoundEngine {
   }
 
   sequence() {
-    const chords = [
-      [110, 164.81, 220],
-      [92.5, 138.59, 185],
-      [82.41, 123.47, 164.81],
-      [98, 146.83, 196],
+    const motifs = [
+      [329.63, 493.88, 659.25],
+      [293.66, 440, 587.33],
+      [261.63, 392, 523.25],
+      [349.23, 523.25, 698.46],
     ];
-    const chord = chords[this.step % chords.length];
-    chord.forEach((frequency, index) => this.tone(frequency, index * 0.16, 1.65, index === 0 ? 0.026 : 0.015, index === 1 ? "triangle" : "sine"));
-    this.tone(chord[2] * 2, 1.55, 0.65, 0.012, "sine");
+    const motif = motifs[this.step % motifs.length];
+    motif.forEach((frequency, index) => {
+      this.tone(frequency, index * 0.22, 0.9 + index * 0.14, index === 0 ? 0.018 : 0.012, index === 1 ? "triangle" : "sine");
+    });
+    this.tone(motif[2] * 1.5, 1.08, 0.62, 0.007, "sine");
     this.step += 1;
   }
 
   sceneCue(index) {
     if (!this.started) return;
-    const roots = [146.83, 164.81, 123.47, 185, 220, 246.94, 110, 196];
-    const root = roots[index] || 146.83;
-    this.tone(root, 0, 0.34, 0.065, "sine", this.master);
-    this.tone(root * 1.5, 0.08, 0.48, 0.04, "triangle", this.master);
-    this.tone(root * 2, 0.19, 0.55, 0.025, "sine", this.master);
+    const roots = [329.63, 392, 293.66, 440, 493.88, 523.25, 349.23, 466.16];
+    const root = roots[index] || 329.63;
+    this.tone(root, 0, 0.24, 0.035, "sine", this.master);
+    this.tone(root * 1.5, 0.07, 0.34, 0.024, "triangle", this.master);
+    this.tone(root * 2, 0.16, 0.42, 0.014, "sine", this.master);
   }
 
   click(kind = "soft") {
     if (!this.started) return;
-    const frequency = kind === "contact" ? 440 : 260;
-    this.tone(frequency, 0, 0.16, 0.055, "sine", this.master);
-    this.tone(frequency * 1.5, 0.045, 0.22, 0.026, "triangle", this.master);
+    const frequency = kind === "contact" ? 659.25 : 523.25;
+    this.tone(frequency, 0, 0.12, 0.035, "sine", this.master);
+    this.tone(frequency * 1.5, 0.04, 0.18, 0.018, "triangle", this.master);
   }
 
   setEnabled(value) {

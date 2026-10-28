@@ -26,7 +26,7 @@
   border-radius: 7px;
   color: #70787c;
   background: transparent;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 650;
   white-space: nowrap;
 }
@@ -38,7 +38,7 @@
   color: #7b8589;
   background: #e9ece8;
   font-family: var(--mono);
-  font-size: 7px;
+  font-size: 10px;
   text-align: center;
 }
 
@@ -64,7 +64,7 @@
   place-items: center;
   border-radius: 6px;
   font-family: var(--mono);
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 800;
 }
 
@@ -80,7 +80,7 @@
   margin-bottom: 7px;
   color: #333a3e !important;
   font-family: var(--mono);
-  font-size: 9px !important;
+  font-size: 12px !important;
 }
 
 .sideStack {
@@ -105,8 +105,8 @@
 .workloadItem > div:nth-child(2) { min-width: 0; }
 .workloadItem strong,
 .workloadItem span { display: block; }
-.workloadItem strong { margin-bottom: 3px; font-size: 10px; }
-.workloadItem span { color: #8b9295; font-size: 7px; }
+.workloadItem strong { margin-bottom: 3px; font-size: 13px; }
+.workloadItem span { color: #8b9295; font-size: 10px; }
 .workloadItem :global(.progress-wrap) { margin-top: 8px; }
 .workloadItem > div:last-child { text-align: right; }
 .workloadItem > div:last-child b { display: block; font-size: 16px; font-weight: 550; }
@@ -128,7 +128,7 @@
 .signalGrid > div:nth-last-child(-n + 2) { border-bottom: 0; }
 .signalGrid svg { display: block; margin-bottom: 12px; color: #3e9dbb; }
 .signalGrid strong { display: block; font-size: 21px; font-weight: 520; letter-spacing: -0.04em; }
-.signalGrid span { display: block; margin-top: 4px; color: #8a9295; font-size: 8px; }
+.signalGrid span { display: block; margin-top: 4px; color: #8a9295; font-size: 11px; }
 
 .textButton {
   display: flex;
@@ -136,7 +136,7 @@
   gap: 5px;
   color: #52727c;
   background: transparent;
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 650;
 }
 
@@ -159,8 +159,8 @@
 .assetStrip article > div:last-child { min-width: 0; }
 .assetStrip strong,
 .assetStrip span { display: block; }
-.assetStrip strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
-.assetStrip span { margin: 4px 0 12px; overflow: hidden; color: #899093; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+.assetStrip strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.assetStrip span { margin: 4px 0 12px; overflow: hidden; color: #899093; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 
 .assetIcon {
   display: grid;
@@ -191,9 +191,9 @@
 .activityList article > svg { color: #3598b6; }
 .activityList strong,
 .activityList span { display: block; }
-.activityList strong { font-size: 9px; text-transform: capitalize; }
-.activityList span { margin-top: 3px; color: #8e9598; font-size: 7px; }
-.activityList time { color: #8a9295; font-family: var(--mono); font-size: 7px; }
+.activityList strong { font-size: 12px; text-transform: capitalize; }
+.activityList span { margin-top: 3px; color: #8e9598; font-size: 10px; }
+.activityList time { color: #8a9295; font-family: var(--mono); font-size: 10px; }
 
 .activityEmpty {
   display: flex;
@@ -205,8 +205,8 @@
 
 .activityEmpty strong,
 .activityEmpty span { display: block; }
-.activityEmpty strong { color: #343a3d; font-size: 10px; }
-.activityEmpty span { margin-top: 4px; color: #8d9497; font-size: 8px; }
+.activityEmpty strong { color: #343a3d; font-size: 13px; }
+.activityEmpty span { margin-top: 4px; color: #8d9497; font-size: 11px; }
 
 .queueToolbar {
   display: flex;
@@ -233,7 +233,7 @@
 }
 
 .searchField:focus-within { border-color: var(--accent); }
-.searchField input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; font-size: 10px; }
+.searchField input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; font-size: 13px; }
 .searchField input::placeholder { color: #9ba1a4; }
 
 .filterGroup {
@@ -251,11 +251,11 @@
   color: #768084;
   background: transparent;
   font-family: var(--mono);
-  font-size: 8px;
+  font-size: 11px;
 }
 
 .filterGroup button.active { color: #152024; background: #fff; box-shadow: 0 3px 10px rgba(20, 25, 28, 0.08); }
-.resultCount { margin-left: auto; color: #858d90; font-family: var(--mono); font-size: 7px; white-space: nowrap; }
+.resultCount { margin-left: auto; color: #858d90; font-family: var(--mono); font-size: 10px; white-space: nowrap; }
 
 .ticketWorkspace {
   display: grid;
@@ -287,8 +287,8 @@
 .ticketRow > div:nth-child(2) { min-width: 0; }
 .ticketRow strong,
 .ticketRow span { display: block; }
-.ticketRow strong { overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-.ticketRow > div:nth-child(2) > span { margin-top: 5px; overflow: hidden; color: #899195; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.ticketRow strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.ticketRow > div:nth-child(2) > span { margin-top: 5px; overflow: hidden; color: #899195; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .ticketRow > svg { color: #92999c; }
 
 .ticketMeta {
@@ -303,7 +303,7 @@
   gap: 5px;
   color: #778185;
   font-family: var(--mono);
-  font-size: 7px;
+  font-size: 10px;
 }
 
 .noResults {
@@ -317,8 +317,8 @@
 
 .noResults strong,
 .noResults span { display: block; }
-.noResults strong { margin-top: 12px; color: #32383b; font-size: 11px; }
-.noResults span { margin-top: 6px; color: #8c9396; font-size: 8px; }
+.noResults strong { margin-top: 12px; color: #32383b; font-size: 14px; }
+.noResults span { margin-top: 6px; color: #8c9396; font-size: 11px; }
 
 .ticketDetail {
   position: sticky;
@@ -331,7 +331,7 @@
 }
 
 .detailTop { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.ticketDetail > p { margin: 17px 0 8px; color: #7f898d; font-family: var(--mono); font-size: 8px; }
+.ticketDetail > p { margin: 17px 0 8px; color: #7f898d; font-family: var(--mono); font-size: 11px; }
 .ticketDetail h2 { margin: 0; font-size: clamp(21px, 2.2vw, 32px); font-weight: 500; letter-spacing: -0.045em; line-height: 1.08; }
 
 .slaCard {
@@ -350,8 +350,8 @@
 }
 
 .slaCard svg { color: #2c91af; }
-.slaCard span { color: #67757a; font-size: 8px; }
-.slaCard strong { font-family: var(--mono); font-size: 10px; }
+.slaCard span { color: #67757a; font-size: 11px; }
+.slaCard strong { font-family: var(--mono); font-size: 13px; }
 
 .detailList {
   margin: 20px 0;
@@ -366,8 +366,8 @@
   border-bottom: 1px solid #e8ebe7;
 }
 
-.detailList dt { color: #858e91; font-size: 8px; }
-.detailList dd { margin: 0; font-size: 9px; font-weight: 650; text-align: right; }
+.detailList dt { color: #858e91; font-size: 11px; }
+.detailList dd { margin: 0; font-size: 12px; font-weight: 650; text-align: right; }
 
 .timeline {
   margin: 18px 0 22px;
@@ -379,7 +379,7 @@
   gap: 10px;
   margin: 0;
   color: #8a9194;
-  font-size: 8px;
+  font-size: 11px;
   line-height: 1.45;
 }
 
@@ -395,9 +395,9 @@
 .timeline i::after { position: absolute; top: 8px; left: 1px; width: 1px; height: 39px; background: #dfe3de; content: ""; }
 .timeline p:last-child i::after { display: none; }
 .timeline p + p { margin-top: 16px; }
-.timeline strong { display: block; margin-bottom: 3px; color: #40474a; font-size: 8px; }
+.timeline strong { display: block; margin-bottom: 3px; color: #40474a; font-size: 11px; }
 .ticketDetail :global(.workflow-button) { display: inline-flex; width: 100%; align-items: center; justify-content: center; gap: 7px; }
-.permissionNote { margin: 9px 0 0 !important; color: #98a0a2 !important; font-family: var(--mono) !important; font-size: 6px !important; line-height: 1.5; text-align: center; }
+.permissionNote { margin: 9px 0 0 !important; color: #98a0a2 !important; font-family: var(--mono) !important; font-size: 10px !important; line-height: 1.5; text-align: center; }
 
 .assetHeader {
   display: flex;
@@ -412,8 +412,8 @@
 
 .assetHeader > div span,
 .assetHeader > div strong { display: block; }
-.assetHeader > div span { margin-bottom: 5px; color: #8a9295; font-family: var(--mono); font-size: 7px; letter-spacing: 0.08em; text-transform: uppercase; }
-.assetHeader > div strong { font-size: 13px; }
+.assetHeader > div span { margin-bottom: 5px; color: #8a9295; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.assetHeader > div strong { font-size: 16px; }
 .assetHeader .searchField { max-width: 430px; }
 
 .assetGrid {
@@ -434,14 +434,14 @@
 }
 
 .assetCard header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.assetCard > p { margin: 19px 0 6px; color: #7e898d; font-family: var(--mono); font-size: 8px; }
+.assetCard > p { margin: 19px 0 6px; color: #7e898d; font-family: var(--mono); font-size: 11px; }
 .assetCard h2 { margin: 0; font-size: 18px; font-weight: 580; letter-spacing: -0.035em; }
-.assetCard > span { display: block; margin-top: 6px; color: #828b8e; font-size: 8px; }
+.assetCard > span { display: block; margin-top: 6px; color: #828b8e; font-size: 11px; }
 .health { margin: 23px 0 19px; }
 .assetCard footer { margin-top: auto; padding-top: 14px; border-top: 1px solid #e8ebe7; }
-.assetCard footer > div { display: flex; align-items: center; gap: 7px; color: #687478; font-size: 8px; }
+.assetCard footer > div { display: flex; align-items: center; gap: 7px; color: #687478; font-size: 11px; }
 .assetCard footer svg { color: #338eaa; }
-.assetCard footer small { display: block; margin: 6px 0 14px; color: #9ba1a3; font-size: 7px; }
+.assetCard footer small { display: block; margin: 6px 0 14px; color: #9ba1a3; font-size: 10px; }
 .assetCard :global(.workflow-button) { display: flex; width: 100%; align-items: center; justify-content: space-between; }
 
 .roleBanner {
@@ -457,8 +457,8 @@
 
 .roleBanner strong,
 .roleBanner span { display: block; }
-.roleBanner strong { font-size: 9px; }
-.roleBanner span { margin-top: 3px; color: #9b814d; font-size: 8px; }
+.roleBanner strong { font-size: 12px; }
+.roleBanner span { margin-top: 3px; color: #9b814d; font-size: 11px; }
 
 :global(.system-actions button) {
   display: inline-flex;

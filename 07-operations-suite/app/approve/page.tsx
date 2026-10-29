@@ -37,6 +37,7 @@ type ApprovalRequest = {
   risk: "Low" | "Medium" | "High";
   stage: number;
   summary: string;
+  latestUpdate?: string;
   evidence: { name: string; type: string; size: string; state: "Verified" | "Review" | "Missing" }[];
 };
 
@@ -128,9 +129,12 @@ function ApproveWorkspace() {
   const [view, setView] = useState<"pipeline" | "evidence" | "audit">("pipeline");
   const [query, setQuery] = useState("");
   const [showOnlyOpen, setShowOnlyOpen] = useState(false);
+  const [recentlyChangedId, setRecentlyChangedId] = useState<string | null>(null);
 
   const selected = requests.find((request) => request.id === selectedId) ?? requests[0];
   const role = session?.role ?? "submitter";
+  const nextRequestNumber = Math.max(...requests.map((request) => Number(request.id.replace("APR-", "")))) + 1;
+  const nextRequestId = `APR-${String(nextRequestNumber).padStart(4, "0")}`;
 
   const filteredRequests = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -142,11 +146,57 @@ function ApproveWorkspace() {
   }, [query, requests, showOnlyOpen]);
 
   const updateSelected = (status: RequestStatus, stage = selected.stage) => {
-    setRequests((current) => current.map((request) => request.id === selected.id ? { ...request, status, stage } : request));
+    setRequests((current) => current.map((request) => request.id === selected.id ? {
+      ...request,
+      status,
+      stage,
+      due: ["Approved", "Rejected", "Withdrawn"].includes(status) ? "Completed just now" : request.due,
+      latestUpdate: `${status} by ${session?.name ?? "the active demo user"}`,
+    } : request));
+    setRecentlyChangedId(selected.id);
+  };
+
+  const addRequest = () => {
+    const id = nextRequestId;
+    const request: ApprovalRequest = {
+      id,
+      title: "New operations request",
+      owner: session?.name ?? "Emil Navarro",
+      department: "Operations",
+      amount: "₱0",
+      submitted: "Just now",
+      due: "Draft - not yet scheduled",
+      status: "Needs evidence",
+      risk: "Low",
+      stage: 1,
+      summary: "A new request created in this demo session. Add the required evidence before it moves to review.",
+      latestUpdate: `Created by ${session?.name ?? "the active demo user"}`,
+      evidence: [
+        { name: "Request brief", type: "Required evidence", size: "-", state: "Missing" },
+        { name: "Supporting quotation", type: "Required evidence", size: "-", state: "Missing" },
+      ],
+    };
+    setRequests((current) => [request, ...current]);
+    setSelectedId(id);
+    setRecentlyChangedId(id);
+    setView("pipeline");
+  };
+
+  const addContext = () => {
+    setRequests((current) => current.map((request) => request.id === selected.id ? {
+      ...request,
+      latestUpdate: `Supporting context added by ${session?.name ?? "the active demo user"}`,
+    } : request));
+    setRecentlyChangedId(selected.id);
+    setView("audit");
   };
 
   const openCount = requests.filter((request) => !["Approved", "Rejected", "Withdrawn"].includes(request.status)).length;
   const completeEvidence = selected.evidence.filter((file) => file.state !== "Missing").length;
+  const allEvidence = requests.flatMap((request) => request.evidence);
+  const evidenceHealth = Math.round((allEvidence.filter((file) => file.state !== "Missing").length / Math.max(1, allEvidence.length)) * 100);
+  const policyExceptions = requests.filter((request) => request.risk === "High" && !["Approved", "Rejected", "Withdrawn"].includes(request.status)).length;
+  const workflowComplete = ["Approved", "Rejected", "Withdrawn"].includes(selected.status);
 
   return (
     <>
@@ -159,7 +209,7 @@ function ApproveWorkspace() {
         <div className="system-actions">
           <button onClick={() => setShowOnlyOpen((current) => !current)}><Filter size={14} /> {showOnlyOpen ? "Show all" : "Open only"}</button>
           {role === "submitter" && (
-            <WorkflowButton action="request:create" recordId="APR-DRAFT" note="Created a new approval request draft" className="primary">
+            <WorkflowButton action="request:create" recordId={nextRequestId} note="Created a new approval request draft" className="primary" onSuccess={addRequest}>
               New request <ArrowRight size={14} />
             </WorkflowButton>
           )}
@@ -168,9 +218,9 @@ function ApproveWorkspace() {
 
       <section className="metric-grid" aria-label="Approval metrics">
         <MetricCard label="Open requests" value={String(openCount)} delta="2 due today" detail="Across procurement, facilities, and operations" />
-        <MetricCard label="Median decision" value="1.8d" delta="−14%" detail="From complete evidence to final approval" tone="good" />
-        <MetricCard label="Evidence health" value="92%" delta="+4.2%" detail="Required documents complete at submission" tone="good" />
-        <MetricCard label="Policy exceptions" value="03" delta="Review" detail="One high-risk request needs escalation" tone="warn" />
+        <MetricCard label="Median decision" value="1.8d" delta="-14%" detail="From complete evidence to final approval" tone="good" />
+        <MetricCard label="Evidence health" value={`${evidenceHealth}%`} delta={`${allEvidence.length} files`} detail="Required documents currently supplied" tone={evidenceHealth >= 80 ? "good" : "warn"} />
+        <MetricCard label="Policy exceptions" value={String(policyExceptions).padStart(2, "0")} delta={policyExceptions ? "Review" : "Clear"} detail={policyExceptions ? "High-risk requests need escalation" : "No high-risk requests need escalation"} tone={policyExceptions ? "warn" : "good"} />
       </section>
 
       <div className={styles.workspace}>
@@ -189,7 +239,7 @@ function ApproveWorkspace() {
             {filteredRequests.map((request) => (
               <button
                 key={request.id}
-                className={`${styles.requestRow} ${selected.id === request.id ? styles.selected : ""}`}
+                className={`${styles.requestRow} ${selected.id === request.id ? styles.selected : ""} ${recentlyChangedId === request.id ? styles.changed : ""}`}
                 onClick={() => setSelectedId(request.id)}
               >
                 <span className={styles.requestMarker}>{request.stage === 4 ? <Check size={13} /> : request.stage}</span>
@@ -253,26 +303,37 @@ function ApproveWorkspace() {
                 </div>
               </div>
 
+              {selected.latestUpdate && (
+                <div className={styles.sessionUpdate}>
+                  <CheckCircle2 size={16} />
+                  <div><span>Session update</span><strong>{selected.latestUpdate}</strong></div>
+                  <small>Saved after the API accepted the action</small>
+                </div>
+              )}
+
               <div className={styles.decisionBar}>
                 <div><span>Acting as</span><strong>{session?.name ?? "Starting session"} · {role}</strong></div>
                 <div className={styles.decisionActions}>
-                  {role === "submitter" && (
+                  {role === "submitter" && !workflowComplete && (
                     <>
-                      <WorkflowButton action="request:comment" recordId={selected.id} note="Added supporting context to the request"><MessageSquareText size={14} /> Add context</WorkflowButton>
+                      <WorkflowButton action="request:comment" recordId={selected.id} note="Added supporting context to the request" onSuccess={addContext}><MessageSquareText size={14} /> Add context</WorkflowButton>
                       <WorkflowButton action="request:withdraw" recordId={selected.id} note="Withdrew request from consideration" className={styles.danger} onSuccess={() => updateSelected("Withdrawn")}><Archive size={14} /> Withdraw</WorkflowButton>
                     </>
                   )}
-                  {role === "reviewer" && (
+                  {role === "reviewer" && !workflowComplete && !["Ready", "Returned"].includes(selected.status) && (
                     <>
                       <WorkflowButton action="request:return" recordId={selected.id} note="Returned to submitter for additional evidence" className={styles.danger} onSuccess={() => updateSelected("Returned", 1)}><RotateCcw size={14} /> Return</WorkflowButton>
                       <WorkflowButton action="request:review" recordId={selected.id} note="Completed evidence and policy review" className="primary" onSuccess={() => updateSelected("Ready", 3)}>Complete review <Check size={14} /></WorkflowButton>
                     </>
                   )}
-                  {role === "approver" && (
+                  {role === "approver" && !workflowComplete && (
                     <>
                       <WorkflowButton action="request:reject" recordId={selected.id} note="Rejected after final decision review" className={styles.danger} onSuccess={() => updateSelected("Rejected", 4)}><X size={14} /> Reject</WorkflowButton>
                       <WorkflowButton action="request:approve" recordId={selected.id} note="Approved after final decision review" className="primary" onSuccess={() => updateSelected("Approved", 4)}>Approve request <Check size={14} /></WorkflowButton>
                     </>
+                  )}
+                  {(workflowComplete || (role === "reviewer" && ["Ready", "Returned"].includes(selected.status))) && (
+                    <span className={styles.actionComplete}><CheckCircle2 size={14} /> {workflowComplete ? `Workflow ${selected.status.toLowerCase()}` : selected.status === "Returned" ? "Returned to submitter" : "Review completed"}</span>
                   )}
                 </div>
               </div>

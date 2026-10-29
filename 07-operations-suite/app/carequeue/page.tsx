@@ -42,6 +42,7 @@ type QueueEntry = {
   wait: number;
   status: QueueStatus;
   priority?: boolean;
+  lastUpdate?: string;
 };
 
 type Appointment = {
@@ -51,6 +52,7 @@ type Appointment = {
   service: string;
   provider: string;
   state: "Arrived" | "Confirmed" | "Due soon" | "Cancelled";
+  lastUpdate?: string;
 };
 
 const initialQueue: QueueEntry[] = [
@@ -94,6 +96,8 @@ function CareQueueWorkspace() {
   const [queueFilter, setQueueFilter] = useState<"All" | QueueStatus>("All");
   const [query, setQuery] = useState("");
   const [scheduleOffset, setScheduleOffset] = useState(0);
+  const [recentQueueId, setRecentQueueId] = useState<string | null>(null);
+  const [recentAppointmentId, setRecentAppointmentId] = useState<string | null>(null);
   const role = session?.role ?? "client";
 
   const visibleQueue = useMemo(() => queue.filter((entry) => {
@@ -108,28 +112,118 @@ function CareQueueWorkspace() {
   const averageWait = Math.round(queue.filter((entry) => entry.status === "Waiting").reduce((total, entry) => total + entry.wait, 0) / Math.max(1, waiting));
   const nextRecommended = queue.find((entry) => entry.status === "Waiting" && entry.priority) ?? queue.find((entry) => entry.status === "Waiting");
   const scheduleTitle = ["Tuesday, 27 October", "Wednesday, 28 October", "Thursday, 29 October"][scheduleOffset + 1];
+  const completedToday = 18 + queue.filter((entry) => entry.status === "Complete").length;
+  const scheduledToday = 34 + appointments.length - initialAppointments.length;
+  const nextVisitRescheduled = appointments.find((appointment) => appointment.id === "APT-4086")?.time === "14:20";
+  const nextAppointmentNumber = Math.max(...appointments.map((appointment) => Number(appointment.id.replace("APT-", "")))) + 1;
+  const nextAppointmentId = `APT-${nextAppointmentNumber}`;
+  const walkInCount = queue.filter((entry) => entry.id.startsWith("VIS-WALKIN")).length;
+  const nextWalkInQueueId = `VIS-WALKIN-${walkInCount + 1}`;
 
   const updateQueue = (id: string, status: QueueStatus) => {
-    setQueue((current) => current.map((entry) => entry.id === id ? { ...entry, status, wait: status === "Complete" ? 0 : entry.wait } : entry));
+    const updateLabel: Record<QueueStatus, string> = {
+      Waiting: "Waiting status restored just now",
+      Called: "Called to the room just now",
+      "In service": "Service started just now",
+      Complete: "Visit completed just now",
+    };
+    setQueue((current) => current.map((entry) => entry.id === id ? { ...entry, status, wait: status === "Complete" ? 0 : entry.wait, lastUpdate: updateLabel[status] } : entry));
+    setRecentQueueId(id);
   };
 
   const checkIn = (appointment: Appointment) => {
-    setAppointments((current) => current.map((item) => item.id === appointment.id ? { ...item, state: "Arrived" } : item));
+    setAppointments((current) => current.map((item) => item.id === appointment.id ? { ...item, state: "Arrived", lastUpdate: "Checked in just now" } : item));
+    setRecentAppointmentId(appointment.id);
     if (!queue.some((entry) => entry.client === appointment.client)) {
+      const id = `VIS-${1820 + queue.length + 1}`;
+      setRecentQueueId(id);
       setQueue((current) => [...current, {
-        id: `VIS-${1820 + current.length + 1}`,
-        number: `A-${String(21 + current.length).padStart(3, "0")}`,
-        client: appointment.client,
-        initials: appointment.client.split(" ").map((part) => part[0]).join("").slice(0, 2),
-        service: appointment.service,
-        provider: appointment.provider,
-        room: appointment.provider.includes("Cruz") ? "Care Bay 02" : appointment.provider.includes("Villanueva") ? "Lab 01" : "Room 03",
-        appointment: appointment.time,
-        arrived: "Now",
-        wait: 0,
-        status: "Waiting",
-      }]);
+          id,
+          number: `A-${String(21 + current.length).padStart(3, "0")}`,
+          client: appointment.client,
+          initials: appointment.client.split(" ").map((part) => part[0]).join("").slice(0, 2),
+          service: appointment.service,
+          provider: appointment.provider,
+          room: appointment.provider.includes("Cruz") ? "Care Bay 02" : appointment.provider.includes("Villanueva") ? "Lab 01" : "Room 03",
+          appointment: appointment.time,
+          arrived: "Now",
+          wait: 0,
+          status: "Waiting",
+          lastUpdate: "Checked in just now",
+        }]);
     }
+  };
+
+  const addClientAppointment = () => {
+    const addedCount = appointments.length - initialAppointments.length;
+    const availableTimes = ["14:20", "14:40", "15:00", "15:20", "15:40"];
+    const appointment: Appointment = {
+      id: nextAppointmentId,
+      time: availableTimes[addedCount % availableTimes.length],
+      client: session?.name ?? "Jamie Garcia",
+      service: "Wellness consultation",
+      provider: "Dr. Luis Flores",
+      state: "Confirmed",
+      lastUpdate: "Booked in this session",
+    };
+    setAppointments((current) => [...current, appointment]);
+    setRecentAppointmentId(appointment.id);
+    setScheduleOffset(0);
+    setView("appointments");
+  };
+
+  const addWalkIn = () => {
+    const guests = ["Ana Dela Cruz", "Miguel Ramos", "Sofia Mendoza", "Rico Santos"];
+    const client = guests[walkInCount % guests.length];
+    const queueId = nextWalkInQueueId;
+    const appointmentId = nextAppointmentId;
+    const appointment: Appointment = {
+      id: appointmentId,
+      time: "Now",
+      client,
+      service: "Walk-in consultation",
+      provider: "Dr. Luis Flores",
+      state: "Arrived",
+      lastUpdate: "Walk-in added just now",
+    };
+    const entry: QueueEntry = {
+      id: queueId,
+      number: `W-${String(walkInCount + 1).padStart(3, "0")}`,
+      client,
+      initials: client.split(" ").map((part) => part[0]).join("").slice(0, 2),
+      service: appointment.service,
+      provider: appointment.provider,
+      room: "Room 03",
+      appointment: "Walk-in",
+      arrived: "Now",
+      wait: 0,
+      status: "Waiting",
+      lastUpdate: "Walk-in added just now",
+    };
+    setAppointments((current) => [...current, appointment]);
+    setQueue((current) => [...current, entry]);
+    setRecentAppointmentId(appointmentId);
+    setRecentQueueId(queueId);
+    setQueueFilter("All");
+    setView("queue");
+  };
+
+  const moveQueueLater = (entry: QueueEntry) => {
+    setQueue((current) => [
+      ...current.filter((item) => item.id !== entry.id),
+      { ...entry, priority: false, lastUpdate: "Moved to a later position just now" },
+    ]);
+    setRecentQueueId(entry.id);
+  };
+
+  const cancelAppointment = (id: string) => {
+    setAppointments((current) => current.map((item) => item.id === id ? { ...item, state: "Cancelled", lastUpdate: "Cancelled just now" } : item));
+    setRecentAppointmentId(id);
+  };
+
+  const rescheduleNextVisit = () => {
+    setAppointments((current) => current.map((item) => item.id === "APT-4086" ? { ...item, time: "14:20", state: "Confirmed", lastUpdate: "Rescheduled to 14:20 just now" } : item));
+    setRecentAppointmentId("APT-4086");
   };
 
   return (
@@ -142,14 +236,14 @@ function CareQueueWorkspace() {
         </div>
         <div className="system-actions">
           <button onClick={() => setView("appointments")}><CalendarDays size={14} /> Today’s schedule</button>
-          {role === "client" && <WorkflowButton action="appointment:create" recordId="APT-DRAFT" note="Started a new appointment booking" className="primary">Book appointment <ArrowRight size={14} /></WorkflowButton>}
-          {role === "receptionist" && <WorkflowButton action="appointment:create" recordId="APT-WALKIN" note="Created a walk-in appointment" className="primary"><Plus size={14} /> Add walk-in</WorkflowButton>}
+          {role === "client" && <WorkflowButton action="appointment:create" recordId={nextAppointmentId} note="Created a new appointment" className="primary" onSuccess={addClientAppointment}>Book appointment <ArrowRight size={14} /></WorkflowButton>}
+          {role === "receptionist" && <WorkflowButton action="appointment:create" recordId={nextAppointmentId} note="Created a walk-in appointment" className="primary" onSuccess={addWalkIn}><Plus size={14} /> Add walk-in</WorkflowButton>}
         </div>
       </header>
 
       <section className="metric-grid" aria-label="Queue metrics">
         <MetricCard label="People waiting" value={String(waiting)} delta="Live" detail="Two providers ready for their next client" />
-        <MetricCard label="Average wait" value={`${averageWait}m`} delta="−3 min" detail="Below today’s 15-minute service target" tone="good" />
+        <MetricCard label="Average wait" value={`${averageWait}m`} delta="-3 min" detail="Below today’s 15-minute service target" tone="good" />
         <MetricCard label="In service" value={String(inService)} delta="3 rooms" detail="Across consultation, diagnostics, and care" />
         <MetricCard label="On-time today" value="91%" delta="+6.4%" detail="Appointments started within ten minutes" tone="good" />
       </section>
@@ -180,7 +274,7 @@ function CareQueueWorkspace() {
             </div>
             <div className={styles.queueList}>
               {visibleQueue.map((entry) => (
-                <article key={entry.id} className={`${styles.queueCard} ${entry.status === "Called" ? styles.isCalled : ""} ${entry.priority ? styles.priority : ""}`}>
+                <article key={entry.id} className={`${styles.queueCard} ${entry.status === "Called" ? styles.isCalled : ""} ${entry.priority ? styles.priority : ""} ${recentQueueId === entry.id ? styles.recentlyUpdated : ""}`}>
                   <div className={styles.queueNumber}><span>{entry.number}</span><small>{entry.appointment}</small></div>
                   <div className={styles.clientAvatar}>{entry.initials}</div>
                   <div className={styles.clientInfo}>
@@ -190,7 +284,7 @@ function CareQueueWorkspace() {
                   </div>
                   <div className={styles.waitBlock}>
                     <StatusBadge tone={queueTone(entry.status)}>{entry.status}</StatusBadge>
-                    <small>{entry.status === "Complete" ? "Visit closed" : `Arrived ${entry.arrived} · ${entry.wait}m`}</small>
+                    <small>{entry.lastUpdate ?? (entry.status === "Complete" ? "Visit closed" : `Arrived ${entry.arrived} · ${entry.wait}m`)}</small>
                   </div>
                   <div className={styles.queueActions}>
                     {role === "provider" && entry.status === "Waiting" && (
@@ -203,7 +297,7 @@ function CareQueueWorkspace() {
                       <WorkflowButton action="queue:complete" recordId={entry.id} note={`Completed visit for ${entry.number}`} className="primary" onSuccess={() => updateQueue(entry.id, "Complete")}><Check size={13} /> Complete</WorkflowButton>
                     )}
                     {role === "receptionist" && entry.status === "Waiting" && (
-                      <WorkflowButton action="queue:skip" recordId={entry.id} note={`Moved ${entry.number} to the end of the queue`} onSuccess={() => setQueue((current) => [...current.filter((item) => item.id !== entry.id), entry])}><TimerReset size={13} /> Move later</WorkflowButton>
+                      <WorkflowButton action="queue:skip" recordId={entry.id} note={`Moved ${entry.number} to the end of the queue`} onSuccess={() => moveQueueLater(entry)}><TimerReset size={13} /> Move later</WorkflowButton>
                     )}
                     {role === "client" && <span className={styles.clientMessage}>{entry.status === "Called" ? "Please proceed" : "Updates are live"}</span>}
                   </div>
@@ -232,7 +326,7 @@ function CareQueueWorkspace() {
               <div className={styles.flowBars} aria-label="Arrivals and completed visits chart">
                 {[34, 52, 41, 78, 62, 88, 70, 58, 82, 66, 93, 73].map((value, index) => <i key={index} style={{ height: `${value}%` }} />)}
               </div>
-              <footer><span>08:30</span><span>10:00</span><b>18 completed</b></footer>
+              <footer><span>08:30</span><span>10:00</span><b>{completedToday} completed</b></footer>
             </section>
 
             <section className={styles.activityCard}>
@@ -259,9 +353,9 @@ function CareQueueWorkspace() {
                 <thead><tr><th>Time</th><th>Client</th><th>Service</th><th>Provider</th><th>Status</th><th>Action</th></tr></thead>
                 <tbody>
                   {appointments.map((appointment) => (
-                    <tr key={appointment.id}>
+                    <tr key={appointment.id} className={recentAppointmentId === appointment.id ? styles.recentRow : ""}>
                       <td><strong>{appointment.time}</strong><small>{appointment.id}</small></td>
-                      <td><strong>{appointment.client}</strong><small>Mobile confirmed</small></td>
+                      <td><strong>{appointment.client}</strong><small>{appointment.lastUpdate ?? "Mobile confirmed"}</small></td>
                       <td>{appointment.service}</td>
                       <td>{appointment.provider}</td>
                       <td><StatusBadge tone={appointment.state === "Arrived" ? "good" : appointment.state === "Due soon" ? "warn" : appointment.state === "Cancelled" ? "danger" : "info"}>{appointment.state}</StatusBadge></td>
@@ -270,8 +364,8 @@ function CareQueueWorkspace() {
                           <WorkflowButton action="queue:checkin" recordId={appointment.id} note={`Checked in ${appointment.client}`} className="primary" onSuccess={() => checkIn(appointment)}><UserRoundCheck size={13} /> Check in</WorkflowButton>
                         )}
                         {role === "receptionist" && appointment.state === "Arrived" && <span className={styles.tableDone}><Check size={12} /> In queue</span>}
-                        {role === "client" && appointment.client === "Jamie Garcia" && appointment.state !== "Cancelled" && <WorkflowButton action="appointment:cancel" recordId={appointment.id} note="Cancelled from the client appointment view" onSuccess={() => setAppointments((current) => current.map((item) => item.id === appointment.id ? { ...item, state: "Cancelled" } : item))}>Cancel</WorkflowButton>}
-                        {role === "client" && appointment.client === "Jamie Garcia" && appointment.state === "Cancelled" && <span className={styles.tableDone}>Cancelled</span>}
+                        {role === "client" && appointment.client === (session?.name ?? "Jamie Garcia") && appointment.state !== "Cancelled" && <WorkflowButton action="appointment:cancel" recordId={appointment.id} note="Cancelled from the client appointment view" onSuccess={() => cancelAppointment(appointment.id)}>Cancel</WorkflowButton>}
+                        {role === "client" && appointment.client === (session?.name ?? "Jamie Garcia") && appointment.state === "Cancelled" && <span className={styles.tableDone}>Cancelled</span>}
                         {role === "provider" && <span className={styles.tableDone}>Scheduled</span>}
                       </td>
                     </tr>
@@ -282,11 +376,12 @@ function CareQueueWorkspace() {
           </Panel>
           <section className={styles.scheduleSummary}>
             <span><CalendarDays size={17} /> Schedule health</span>
-            <strong>34 visits</strong>
+            <strong>{scheduledToday} visits</strong>
             <p>Five appointments remain this morning. The first available opening is at 14:20.</p>
             <ProgressBar value={26} max={34} label="Day progress" />
             <dl><div><dt>Confirmed</dt><dd>28</dd></div><div><dt>Walk-ins</dt><dd>04</dd></div><div><dt>Late arrivals</dt><dd>02</dd></div></dl>
-            {role === "receptionist" && <WorkflowButton action="appointment:reschedule" recordId="APT-4086" note="Opened rescheduling workflow for APT-4086"><Clock3 size={13} /> Reschedule next visit</WorkflowButton>}
+            {role === "receptionist" && !nextVisitRescheduled && <WorkflowButton action="appointment:reschedule" recordId="APT-4086" note="Rescheduled APT-4086 to 14:20" onSuccess={rescheduleNextVisit}><Clock3 size={13} /> Reschedule next visit</WorkflowButton>}
+            {role === "receptionist" && nextVisitRescheduled && <span className={styles.rescheduleComplete}><Check size={13} /> APT-4086 moved to 14:20</span>}
           </section>
         </div>
       )}

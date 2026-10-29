@@ -29,6 +29,7 @@ import { MetricCard, Panel, ProgressBar, Sparkline, StatusBadge } from "@/compon
 import styles from "./page.module.css";
 
 type StockView = "overview" | "inventory" | "orders" | "receiving";
+type PurchaseOrderStatus = "Draft" | "Awaiting approval" | "Approved" | "In transit" | "Part received" | "Received";
 
 type StockItem = {
   sku: string;
@@ -44,6 +45,17 @@ type StockItem = {
   supplier: string;
 };
 
+type PurchaseOrder = {
+  id: string;
+  supplier: string;
+  issued: string;
+  due: string;
+  amount: number;
+  lines: number;
+  status: PurchaseOrderStatus;
+  owner: string;
+};
+
 const inventory: StockItem[] = [
   { sku: "ELEC-1048", name: "USB-C Dock 11-in-1", category: "Electronics", warehouse: "MNL-A", bin: "A-04-12", onHand: 14, available: 9, reorder: 24, unitCost: 3680, movement: [38, 35, 31, 29, 22, 19, 14], supplier: "Tekline Distribution" },
   { sku: "OFFC-2021", name: "Thermal Label Roll 4×6", category: "Office supplies", warehouse: "MNL-B", bin: "B-11-03", onHand: 62, available: 52, reorder: 80, unitCost: 285, movement: [112, 104, 96, 87, 80, 71, 62], supplier: "PrintWorks PH" },
@@ -55,7 +67,7 @@ const inventory: StockItem[] = [
   { sku: "OFFC-2116", name: "A4 Copy Paper · 80gsm", category: "Office supplies", warehouse: "MNL-B", bin: "B-12-01", onHand: 27, available: 20, reorder: 35, unitCost: 248, movement: [58, 51, 47, 41, 36, 32, 27], supplier: "Paperline Corp." },
 ];
 
-const purchaseOrders = [
+const initialPurchaseOrders: PurchaseOrder[] = [
   { id: "PO-2026-1042", supplier: "Tekline Distribution", issued: "27 Oct", due: "30 Oct", amount: 286400, lines: 6, status: "Awaiting approval", owner: "Aya Lim" },
   { id: "PO-2026-1039", supplier: "PrintWorks PH", issued: "26 Oct", due: "29 Oct", amount: 98750, lines: 4, status: "In transit", owner: "Aya Lim" },
   { id: "PO-2026-1036", supplier: "BuildPro Trading", issued: "24 Oct", due: "28 Oct", amount: 148000, lines: 8, status: "Part received", owner: "Miguel Tan" },
@@ -87,7 +99,7 @@ function peso(value: number) {
 }
 
 function poTone(status: string) {
-  if (status === "Received") return "good" as const;
+  if (status === "Received" || status === "Approved") return "good" as const;
   if (status === "Awaiting approval") return "warn" as const;
   if (status === "Part received") return "info" as const;
   return "neutral" as const;
@@ -99,10 +111,14 @@ function StockFlowWorkspace() {
   const [query, setQuery] = useState("");
   const [warehouseFilter, setWarehouseFilter] = useState<"All" | StockItem["warehouse"]>("All");
   const [selectedSku, setSelectedSku] = useState("ELEC-1048");
-  const [selectedPo, setSelectedPo] = useState(purchaseOrders[0].id);
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>(initialPurchaseOrders);
+  const [selectedPo, setSelectedPo] = useState(initialPurchaseOrders[0].id);
   const [selectedReceipt, setSelectedReceipt] = useState(receipts[1].id);
   const [adjustments, setAdjustments] = useState<Record<string, number>>({});
   const [receivedLines, setReceivedLines] = useState<Record<string, number>>({});
+  const [inventoryActivity, setInventoryActivity] = useState<Record<string, string>>({});
+  const [orderActivity, setOrderActivity] = useState<Record<string, string>>({});
+  const [receiptActivity, setReceiptActivity] = useState<Record<string, string>>({});
 
   const role = session?.role || "clerk";
   const visibleInventory = useMemo(() => inventory
@@ -113,10 +129,14 @@ function StockFlowWorkspace() {
   const focusedPo = purchaseOrders.find((order) => order.id === selectedPo) || purchaseOrders[0];
   const focusedReceipt = receipts.find((receipt) => receipt.id === selectedReceipt) || receipts[0];
   const focusedReceived = receivedLines[focusedReceipt.id] ?? focusedReceipt.received;
+  const createdOrderCount = purchaseOrders.filter((order) => order.id.startsWith("PO-DEMO-")).length;
+  const nextPoId = `PO-DEMO-${String(createdOrderCount + 1).padStart(3, "0")}`;
+  const poSubmitted = focusedPo.status !== "Draft";
+  const poApproved = !["Draft", "Awaiting approval"].includes(focusedPo.status);
 
   const headerAction = role === "clerk" ? "stock:count" : "purchase:create";
   const headerLabel = role === "clerk" ? "Start cycle count" : "New purchase order";
-  const headerRecord = role === "clerk" ? "COUNT-MNL-A" : "PO-DRAFT-DEMO";
+  const headerRecord = role === "clerk" ? `COUNT-${selectedSku}` : nextPoId;
 
   return (
     <>
@@ -128,14 +148,38 @@ function StockFlowWorkspace() {
         </div>
         <div className="system-actions">
           <button onClick={() => setView("receiving")}><Truck size={14} /> Today&apos;s arrivals</button>
-          <WorkflowButton action={headerAction} recordId={headerRecord} note={`${headerLabel} from StockFlow control tower`} className="primary" onSuccess={() => setView(role === "clerk" ? "inventory" : "orders")}>
+          <WorkflowButton action={headerAction} recordId={headerRecord} note={`${headerLabel} from StockFlow control tower`} className="primary" onSuccess={() => {
+            if (role === "clerk") {
+              const cycleSku = inventory.find((item) => item.warehouse === "MNL-A")?.sku || inventory[0].sku;
+              setSelectedSku(cycleSku);
+              setWarehouseFilter("MNL-A");
+              setQuery("");
+              setInventoryActivity((current) => ({ ...current, [cycleSku]: "Cycle count started - ready to record" }));
+              setView("inventory");
+              return;
+            }
+            const newOrder: PurchaseOrder = {
+              id: nextPoId,
+              supplier: "Unassigned supplier",
+              issued: "Today",
+              due: "Not set",
+              amount: 0,
+              lines: 0,
+              status: "Draft",
+              owner: session?.name || "Current purchaser",
+            };
+            setPurchaseOrders((current) => [newOrder, ...current]);
+            setOrderActivity((current) => ({ ...current, [nextPoId]: "Draft created just now - ready for line items" }));
+            setSelectedPo(nextPoId);
+            setView("orders");
+          }}>
             {role === "clerk" ? <ClipboardCheck size={14} /> : <FilePlus2 size={14} />} {headerLabel}
           </WorkflowButton>
         </div>
       </header>
 
       <nav className={styles.viewNav} aria-label="StockFlow sections">
-        {views.map((item) => <button key={item.id} className={view === item.id ? styles.active : ""} onClick={() => setView(item.id)}><span>{item.label}</span>{item.count && <b>{item.count}</b>}</button>)}
+        {views.map((item) => <button key={item.id} className={view === item.id ? styles.active : ""} onClick={() => setView(item.id)}><span>{item.label}</span>{item.count && <b>{item.id === "orders" ? String(12 + createdOrderCount) : item.count}</b>}</button>)}
       </nav>
 
       {view === "overview" && (
@@ -228,9 +272,18 @@ function StockFlowWorkspace() {
             <aside className={styles.itemDetail}>
               <div className={styles.detailIcon}><PackageOpen size={22} /></div><span>{focusedItem.sku}</span><h2>{focusedItem.name}</h2><p>{focusedItem.category} · Supplied by {focusedItem.supplier}</p>
               <div className={styles.quantityGrid}><div><span>On hand</span><strong>{focusedItem.onHand}</strong></div><div><span>Available</span><strong>{focusedItem.available}</strong></div><div><span>Reorder at</span><strong>{focusedItem.reorder}</strong></div><div><span>Stock value</span><strong>{peso(focusedItem.onHand * focusedItem.unitCost)}</strong></div></div>
-              <dl><div><dt>Warehouse</dt><dd>{focusedItem.warehouse}</dd></div><div><dt>Bin location</dt><dd>{focusedItem.bin}</dd></div><div><dt>Unit cost</dt><dd>{peso(focusedItem.unitCost)}</dd></div><div><dt>Last count</dt><dd>26 Oct · exact</dd></div></dl>
-              <WorkflowButton action={role === "clerk" ? "stock:count" : role === "manager" ? "stock:adjust" : "movement:view"} recordId={focusedItem.sku} note={`Inventory action for ${focusedItem.name}`} className={role !== "purchaser" ? "primary" : ""} onSuccess={() => role === "manager" && setAdjustments((current) => ({ ...current, [focusedItem.sku]: (current[focusedItem.sku] || 0) + 1 }))}>{role === "clerk" ? <ClipboardCheck size={14} /> : role === "manager" ? <TrendingUp size={14} /> : <ArrowDownToLine size={14} />} {role === "clerk" ? "Record cycle count" : role === "manager" ? "Adjust +1 demo unit" : "View movement ledger"}</WorkflowButton>
-              <small className={styles.roleHint}>Server permission: {role === "clerk" ? "stock:count" : role === "manager" ? "stock:adjust" : "movement:view"}</small>
+              <dl><div><dt>Warehouse</dt><dd>{focusedItem.warehouse}</dd></div><div><dt>Bin location</dt><dd>{focusedItem.bin}</dd></div><div><dt>Unit cost</dt><dd>{peso(focusedItem.unitCost)}</dd></div><div><dt>Last count</dt><dd>{inventoryActivity[focusedItem.sku] || "26 Oct - exact"}</dd></div></dl>
+              <WorkflowButton action={role === "clerk" ? "stock:count" : role === "manager" ? "stock:adjust" : "movement:view"} recordId={focusedItem.sku} note={`Inventory action for ${focusedItem.name}`} className={role !== "purchaser" ? "primary" : ""} onSuccess={() => {
+                if (role === "manager") {
+                  setAdjustments((current) => ({ ...current, [focusedItem.sku]: (current[focusedItem.sku] || 0) + 1 }));
+                  setInventoryActivity((current) => ({ ...current, [focusedItem.sku]: "Inventory adjusted +1 just now" }));
+                } else if (role === "clerk") {
+                  setInventoryActivity((current) => ({ ...current, [focusedItem.sku]: "Count recorded just now - exact" }));
+                } else {
+                  setInventoryActivity((current) => ({ ...current, [focusedItem.sku]: "Movement ledger opened - 7 checkpoints shown" }));
+                }
+              }}>{role === "clerk" ? <ClipboardCheck size={14} /> : role === "manager" ? <TrendingUp size={14} /> : <ArrowDownToLine size={14} />} {role === "clerk" ? "Record cycle count" : role === "manager" ? "Adjust +1 demo unit" : "View movement ledger"}</WorkflowButton>
+              <small className={styles.roleHint} aria-live="polite">{inventoryActivity[focusedItem.sku] || `Server permission: ${role === "clerk" ? "stock:count" : role === "manager" ? "stock:adjust" : "movement:view"}`}</small>
             </aside>
           </div>
         </div>
@@ -239,7 +292,7 @@ function StockFlowWorkspace() {
       {view === "orders" && (
         <div className={styles.viewStack}>
           <div className={styles.orderSummary}>
-            <div><ShoppingCart size={18} /><span>Open orders</span><strong>12</strong></div><div><CircleDollarSign size={18} /><span>Committed value</span><strong>₱1.16M</strong></div><div><CalendarClock size={18} /><span>Due this week</span><strong>07</strong></div><div><TriangleAlert size={18} /><span>Needs approval</span><strong>02</strong></div>
+            <div><ShoppingCart size={18} /><span>Open orders</span><strong>{12 + createdOrderCount}</strong></div><div><CircleDollarSign size={18} /><span>Committed value</span><strong>₱1.16M</strong></div><div><CalendarClock size={18} /><span>Due this week</span><strong>07</strong></div><div><TriangleAlert size={18} /><span>Needs approval</span><strong>{2 + purchaseOrders.filter((order) => order.id.startsWith("PO-DEMO-") && order.status === "Awaiting approval").length}</strong></div>
           </div>
           <div className={styles.orderWorkspace}>
             <Panel eyebrow="Procurement ledger" title="Purchase orders">
@@ -249,9 +302,19 @@ function StockFlowWorkspace() {
               <header><div className={styles.detailIcon}><ShoppingCart size={20} /></div><StatusBadge tone={poTone(focusedPo.status)}>{focusedPo.status}</StatusBadge></header>
               <span>{focusedPo.id}</span><h2>{focusedPo.supplier}</h2><p>{focusedPo.lines} line items · Owned by {focusedPo.owner}</p>
               <div className={styles.poAmount}><span>Order total</span><strong>{peso(focusedPo.amount)}</strong><small>Tax calculated on receipt</small></div>
-              <div className={styles.poSteps}><p className={styles.done}><i><Check size={11} /></i><span><strong>Draft prepared</strong>{focusedPo.issued} · {focusedPo.owner}</span></p><p className={focusedPo.status !== "Awaiting approval" ? styles.done : styles.current}><i>{focusedPo.status !== "Awaiting approval" ? <Check size={11} /> : "2"}</i><span><strong>Manager approval</strong>{focusedPo.status === "Awaiting approval" ? "Decision required" : "Approved"}</span></p><p><i>3</i><span><strong>Supplier fulfilment</strong>Expected by {focusedPo.due}</span></p></div>
-              <WorkflowButton action={role === "manager" ? "purchase:approve" : role === "purchaser" ? "purchase:submit" : "movement:view"} recordId={focusedPo.id} note={`Purchase order action for ${focusedPo.id}`} className={role !== "clerk" ? "primary" : ""}>{role === "manager" ? <CheckCircle2 size={14} /> : role === "purchaser" ? <ArrowRight size={14} /> : <ArrowDownToLine size={14} />} {role === "manager" ? "Approve purchase order" : role === "purchaser" ? "Submit for approval" : "View stock commitments"}</WorkflowButton>
-              <small className={styles.roleHint}>Switch roles to demonstrate submit and approval separation.</small>
+              <div className={styles.poSteps}><p className={styles.done}><i><Check size={11} /></i><span><strong>Draft prepared</strong>{focusedPo.issued} · {focusedPo.owner}</span></p><p className={poApproved ? styles.done : poSubmitted ? styles.current : ""}><i>{poApproved ? <Check size={11} /> : "2"}</i><span><strong>Manager approval</strong>{poApproved ? "Approved" : poSubmitted ? "Decision required" : "Waiting for submission"}</span></p><p className={focusedPo.status === "Received" ? styles.done : ""}><i>{focusedPo.status === "Received" ? <Check size={11} /> : "3"}</i><span><strong>Supplier fulfilment</strong>{focusedPo.due === "Not set" ? "Due date not set" : `Expected by ${focusedPo.due}`}</span></p></div>
+              <WorkflowButton action={role === "manager" ? "purchase:approve" : role === "purchaser" ? "purchase:submit" : "movement:view"} recordId={focusedPo.id} note={`Purchase order action for ${focusedPo.id}`} className={role !== "clerk" ? "primary" : ""} onSuccess={() => {
+                if (role === "manager") {
+                  setPurchaseOrders((current) => current.map((order) => order.id === focusedPo.id ? { ...order, status: "Approved" } : order));
+                  setOrderActivity((current) => ({ ...current, [focusedPo.id]: "Approved just now - supplier fulfilment unlocked" }));
+                } else if (role === "purchaser") {
+                  setPurchaseOrders((current) => current.map((order) => order.id === focusedPo.id ? { ...order, status: "Awaiting approval" } : order));
+                  setOrderActivity((current) => ({ ...current, [focusedPo.id]: "Submitted just now - manager decision required" }));
+                } else {
+                  setOrderActivity((current) => ({ ...current, [focusedPo.id]: `Stock commitments opened - ${focusedPo.lines} linked lines` }));
+                }
+              }}>{role === "manager" ? <CheckCircle2 size={14} /> : role === "purchaser" ? <ArrowRight size={14} /> : <ArrowDownToLine size={14} />} {role === "manager" ? "Approve purchase order" : role === "purchaser" ? "Submit for approval" : "View stock commitments"}</WorkflowButton>
+              <small className={styles.roleHint} aria-live="polite">{orderActivity[focusedPo.id] || "Switch roles to demonstrate submit and approval separation."}</small>
             </aside>
           </div>
         </div>
@@ -273,8 +336,18 @@ function StockFlowWorkspace() {
               <div className={styles.receiptIdentity}><div className={styles.detailIcon}><Container size={22} /></div><div><h2>{focusedReceipt.supplier}</h2><p>{focusedReceipt.po} · {focusedReceipt.cartons} cartons</p></div></div>
               <div className={styles.receiptProgress}><div><span>Line verification</span><strong>{focusedReceived} / {focusedReceipt.lines}</strong></div><ProgressBar value={focusedReceived} max={focusedReceipt.lines} /></div>
               <div className={styles.receiptChecklist}><p className={styles.done}><i><Check size={12} /></i><span>Purchase order matched</span></p><p className={focusedReceived > 0 ? styles.done : ""}><i>{focusedReceived > 0 ? <Check size={12} /> : "2"}</i><span>Physical count recorded</span></p><p className={focusedReceived === focusedReceipt.lines ? styles.done : ""}><i>{focusedReceived === focusedReceipt.lines ? <Check size={12} /> : "3"}</i><span>Stock posted to ledger</span></p></div>
-              <WorkflowButton action={role === "clerk" ? "stock:receive" : role === "manager" ? "stock:adjust" : "purchase:submit"} recordId={focusedReceipt.id} note={`Receiving workflow for ${focusedReceipt.id}`} className="primary" onSuccess={() => setReceivedLines((current) => ({ ...current, [focusedReceipt.id]: Math.min(focusedReceipt.lines, focusedReceived + 1) }))}><PackageCheck size={14} /> {role === "clerk" ? "Verify next line" : role === "manager" ? "Post variance adjustment" : "Submit receipt variance"}</WorkflowButton>
-              <small className={styles.roleHint}>Each click records an allowed action and advances this demo receipt.</small>
+              <WorkflowButton action={role === "clerk" ? "stock:receive" : role === "manager" ? "stock:adjust" : "purchase:submit"} recordId={focusedReceipt.id} note={`Receiving workflow for ${focusedReceipt.id}`} className="primary" onSuccess={() => {
+                if (role === "clerk") {
+                  const nextReceived = Math.min(focusedReceipt.lines, focusedReceived + 1);
+                  setReceivedLines((current) => ({ ...current, [focusedReceipt.id]: nextReceived }));
+                  setReceiptActivity((current) => ({ ...current, [focusedReceipt.id]: nextReceived === focusedReceipt.lines ? "Receipt completed - stock posted to ledger" : `Line ${nextReceived} of ${focusedReceipt.lines} verified just now` }));
+                } else if (role === "manager") {
+                  setReceiptActivity((current) => ({ ...current, [focusedReceipt.id]: "Variance adjustment posted just now" }));
+                } else {
+                  setReceiptActivity((current) => ({ ...current, [focusedReceipt.id]: "Receipt variance submitted just now" }));
+                }
+              }}><PackageCheck size={14} /> {role === "clerk" ? "Verify next line" : role === "manager" ? "Post variance adjustment" : "Submit receipt variance"}</WorkflowButton>
+              <small className={styles.roleHint} aria-live="polite">{receiptActivity[focusedReceipt.id] || "Each successful action updates this receipt in the current demo session."}</small>
             </aside>
           </div>
           {events.length > 0 && <div className={styles.auditRibbon}><PackageCheck size={15} /><div><strong>Latest recorded action</strong><span>{events[0].action.replaceAll(":", " ")} · {events[0].actorName}</span></div><time>{new Date(events[0].createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time></div>}

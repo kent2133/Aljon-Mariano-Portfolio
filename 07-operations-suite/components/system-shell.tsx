@@ -245,7 +245,7 @@ export function SystemShell({ systemId, activeArea = "Overview", children }: She
       if (!response.ok) throw new Error(data.error || "The workflow action was not accepted.");
       setEvents((current) => [data.event, ...current].slice(0, 12));
       setMode(data.mode === "cloud" ? "cloud" : "fixture");
-      setToast(`${action.replaceAll(":", " ")} recorded successfully.`);
+      setToast(`Action accepted - ${action.replaceAll(":", " ")} updated the demo workspace.`);
       return true;
     } catch (error) {
       setToast(error instanceof Error ? error.message : "The workflow action failed.");
@@ -381,7 +381,7 @@ export function SystemShell({ systemId, activeArea = "Overview", children }: She
             </div>
           </header>
           <main className="system-main">{children}</main>
-          <footer className="system-footer"><span><ShieldCheck size={14} /> Server-validated demo permissions</span><span>Illustrative data · No real customer records</span></footer>
+          <footer className="system-footer"><span><ShieldCheck size={14} /> Server-validated demo permissions</span><span>Interactive demo - visible changes are session-only</span></footer>
         </div>
 
         <button type="button" className="tutorial-launcher" onClick={openTutorial} aria-label={`Open ${system.name} tutorial`}>
@@ -401,7 +401,7 @@ export function SystemShell({ systemId, activeArea = "Overview", children }: She
                 <div>
                   <p>{system.eyebrow} / ROLE-BASED WALKTHROUGH</p>
                   <h2 id={`role-guide-title-${systemId}`}>Explore {system.name} from the right point of view.</h2>
-                  <p id={`role-guide-description-${systemId}`}>{system.summary} Your role changes which workflow actions the demo will accept.</p>
+                  <p id={`role-guide-description-${systemId}`}>{system.summary} Your role changes which workflow actions the demo will accept. Successful actions update this workspace immediately for the current browser session.</p>
                 </div>
               </div>
               <div className="role-guide-current">

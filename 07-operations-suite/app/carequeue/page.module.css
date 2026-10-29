@@ -26,6 +26,7 @@
 .queueCard { position: relative; display: grid; grid-template-columns: 58px 37px minmax(180px, 1fr) auto auto; gap: 12px; align-items: center; min-height: 94px; padding: 12px 8px; border-bottom: 1px solid #e9ebe7; }
 .queueCard:last-child { border-bottom: 0; }
 .queueCard.isCalled { margin: 6px 0; padding-right: 12px; padding-left: 12px; border: 1px solid rgba(255,139,107,0.43); border-radius: 10px; background: linear-gradient(90deg, rgba(255,139,107,0.11), rgba(255,255,255,0.3)); }
+.queueCard.recentlyUpdated { animation: queueUpdated 900ms ease; }
 .queueCard.priority::before { position: absolute; top: 12px; bottom: 12px; left: -5px; width: 3px; border-radius: 3px; background: #ff8b6b; content: ""; }
 .queueNumber { text-align: center; }
 .queueNumber span, .queueNumber small { display: block; }
@@ -80,6 +81,8 @@
 .dateControls button { display: grid; min-width: 30px; height: 30px; place-items: center; padding: 0 8px; border: 1px solid #e0e3de; border-radius: 7px; color: #687075; background: #fff; font-size: 11px; }
 .dateControls button:disabled { cursor: not-allowed; opacity: 0.42; }
 .tableDone { display: inline-flex; align-items: center; gap: 5px; color: #657075; font-family: var(--mono); font-size: 10px; }
+.recentRow { animation: appointmentUpdated 1.1s ease; }
+.recentRow td { background: rgba(255,139,107,0.07); }
 .scheduleSummary { padding: 21px; border: 1px solid #dfe2dc; border-radius: 12px; background: linear-gradient(155deg, rgba(255,139,107,0.1), #fff 48%); }
 .scheduleSummary > span { display: flex; align-items: center; gap: 7px; color: #9a5a46; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
 .scheduleSummary > strong { display: block; margin-top: 24px; font-size: 42px; font-weight: 490; letter-spacing: -0.05em; }
@@ -89,6 +92,17 @@
 .scheduleSummary dt { color: #8e9497; font-size: 11px; }
 .scheduleSummary dd { margin: 0; font-family: var(--mono); font-size: 12px; font-weight: 700; }
 .scheduleSummary button { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
+.rescheduleComplete { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 10px; border-radius: 8px; color: #4d775c; background: rgba(86,133,106,0.1); font-size: 11px; font-weight: 680; }
+
+@keyframes queueUpdated {
+  0%, 45% { background-color: rgba(93, 184, 119, 0.2); }
+  100% { background-color: transparent; }
+}
+
+@keyframes appointmentUpdated {
+  0%, 45% { box-shadow: inset 3px 0 #ff8b6b; }
+  100% { box-shadow: inset 3px 0 transparent; }
+}
 
 .capacityGrid { display: grid; grid-template-columns: repeat(3, minmax(230px, 1fr)); gap: 14px; align-items: stretch; }
 .providerCard, .capacityNote { min-height: 410px; padding: 21px; border: 1px solid #dfe2dc; border-radius: 12px; background: rgba(255,255,255,0.92); }

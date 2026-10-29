@@ -85,16 +85,24 @@ function PulseDeskWorkspace() {
   const [query, setQuery] = useState("");
   const [priority, setPriority] = useState<"All" | Ticket["priority"]>("All");
   const [selectedId, setSelectedId] = useState("INC-2048");
-  const [localStatus, setLocalStatus] = useState<Record<string, TicketStatus>>({});
-  const [createdCount, setCreatedCount] = useState(0);
+  const [createdTickets, setCreatedTickets] = useState<Ticket[]>([]);
+  const [ticketUpdates, setTicketUpdates] = useState<Record<string, Partial<Ticket>>>({});
+  const [followUps, setFollowUps] = useState<Record<string, number>>({});
+  const [assetActivity, setAssetActivity] = useState<Record<string, string>>({});
 
   const role = session?.role || "requester";
-  const visibleTickets = useMemo(() => tickets
-    .map((ticket) => ({ ...ticket, status: localStatus[ticket.id] || ticket.status }))
+  const allTickets = useMemo(() => [...createdTickets, ...tickets]
+    .map((ticket) => ({ ...ticket, ...ticketUpdates[ticket.id] })), [createdTickets, ticketUpdates]);
+  const visibleTickets = useMemo(() => allTickets
     .filter((ticket) => priority === "All" || ticket.priority === priority)
-    .filter((ticket) => `${ticket.id} ${ticket.title} ${ticket.requester} ${ticket.team}`.toLowerCase().includes(query.toLowerCase())), [localStatus, priority, query]);
-  const selected = tickets.find((ticket) => ticket.id === selectedId) || tickets[0];
-  const selectedStatus = localStatus[selected.id] || selected.status;
+    .filter((ticket) => `${ticket.id} ${ticket.title} ${ticket.requester} ${ticket.team}`.toLowerCase().includes(query.toLowerCase())), [allTickets, priority, query]);
+  const selected = allTickets.find((ticket) => ticket.id === selectedId) || allTickets[0];
+  const selectedStatus = selected.status;
+  const createdCount = createdTickets.length;
+  const resolvedInSession = Object.entries(ticketUpdates).filter(([id, update]) => update.status === "Resolved" && tickets.find((ticket) => ticket.id === id)?.status !== "Resolved").length;
+  const openTicketCount = 24 + createdCount - resolvedInSession;
+  const nextTicketId = `REQ-DEMO-${String(createdCount + 1).padStart(3, "0")}`;
+  const selectedFollowUps = followUps[selected.id] || 0;
   const canWorkTickets = role === "technician" || role === "administrator";
 
   const primaryAction = selectedStatus === "New" ? "ticket:assign" : selectedStatus === "Resolved" ? "ticket:comment" : "ticket:resolve";
@@ -110,20 +118,39 @@ function PulseDeskWorkspace() {
         </div>
         <div className="system-actions">
           <button onClick={() => setView("tickets")}><ListFilter size={14} /> Review queue</button>
-          <WorkflowButton action="ticket:create" recordId={`REQ-DEMO-${createdCount + 1}`} note="Created from the PulseDesk portfolio demo" className="primary" onSuccess={() => { setCreatedCount((count) => count + 1); setView("tickets"); }}><Plus size={14} /> New request</WorkflowButton>
+          <WorkflowButton action="ticket:create" recordId={nextTicketId} note="Created from the PulseDesk portfolio demo" className="primary" onSuccess={() => {
+            const newTicket: Ticket = {
+              id: nextTicketId,
+              title: "Demo support request",
+              requester: session?.name || "Demo requester",
+              team: "Portfolio demo",
+              priority: "P3",
+              status: "New",
+              sla: 92,
+              due: "8h 00m",
+              assignee: "Unassigned",
+              channel: "Portal",
+              updated: "Just now",
+            };
+            setCreatedTickets((current) => [newTicket, ...current]);
+            setSelectedId(nextTicketId);
+            setPriority("All");
+            setQuery("");
+            setView("tickets");
+          }}><Plus size={14} /> New request</WorkflowButton>
         </div>
       </header>
 
       <nav className={styles.viewNav} aria-label="PulseDesk sections">
-        {navigation.map((item) => <button key={item.id} aria-pressed={view === item.id} className={view === item.id ? styles.active : ""} onClick={() => setView(item.id)}><span>{item.label}</span>{item.count && <b>{item.count}</b>}</button>)}
+        {navigation.map((item) => <button key={item.id} aria-pressed={view === item.id} className={view === item.id ? styles.active : ""} onClick={() => setView(item.id)}><span>{item.label}</span>{item.count && <b>{item.id === "tickets" ? openTicketCount : item.count}</b>}</button>)}
       </nav>
 
       {view === "command" && (
         <div className={styles.viewStack}>
           <section className="metric-grid" aria-label="Current service metrics">
-            <MetricCard label="Open tickets" value={`${24 + createdCount}`} delta="−8%" detail="Across incidents and requests" tone="good" />
+            <MetricCard label="Open tickets" value={`${openTicketCount}`} delta="-8%" detail="Across incidents and requests" tone="good" />
             <MetricCard label="SLA at risk" value="03" delta="Next · 18m" detail="Two incidents, one request" tone="warn" />
-            <MetricCard label="First response" value="12m" delta="−3m" detail="Rolling seven-day median" tone="good" />
+            <MetricCard label="First response" value="12m" delta="-3m" detail="Rolling seven-day median" tone="good" />
             <MetricCard label="Asset compliance" value="94.7%" delta="+1.2%" detail="301 of 318 managed assets" tone="good" />
           </section>
 
@@ -132,8 +159,8 @@ function PulseDeskWorkspace() {
               <div className="table-wrap">
                 <table className="data-table">
                   <thead><tr><th>Ticket</th><th>Priority</th><th>Owner</th><th>SLA remaining</th><th>Status</th></tr></thead>
-                  <tbody>{tickets.slice(0, 5).map((ticket) => {
-                    const status = localStatus[ticket.id] || ticket.status;
+                  <tbody>{allTickets.slice(0, 5).map((ticket) => {
+                    const status = ticket.status;
                     return <tr key={ticket.id} tabIndex={0} aria-label={`Open ${ticket.id}: ${ticket.title}`} onClick={() => { setSelectedId(ticket.id); setView("tickets"); }} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedId(ticket.id); setView("tickets"); } }} className={styles.clickableRow}>
                       <td><strong>{ticket.title}</strong><small>{ticket.id} · {ticket.team}</small></td>
                       <td><span className={`${styles.priority} ${styles[`priority${ticket.priority}`]}`}>{ticket.priority}</span></td>
@@ -185,7 +212,7 @@ function PulseDeskWorkspace() {
           <div className={styles.queueToolbar}>
             <label className={styles.searchField}><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search tickets, people, or teams" aria-label="Search tickets, people, or teams" /></label>
             <div className={styles.filterGroup} aria-label="Filter tickets by priority">{(["All", "P1", "P2", "P3"] as const).map((item) => <button key={item} aria-pressed={priority === item} className={priority === item ? styles.active : ""} onClick={() => setPriority(item)}>{item}</button>)}</div>
-            <span className={styles.resultCount}>{visibleTickets.length} of {tickets.length + createdCount} records</span>
+            <span className={styles.resultCount}>{visibleTickets.length} of {allTickets.length} records</span>
           </div>
           <div className={styles.ticketWorkspace}>
             <Panel eyebrow="Live queue" title="Incidents and requests" className={styles.queuePanel}>
@@ -212,11 +239,27 @@ function PulseDeskWorkspace() {
                 <div><dt>Last update</dt><dd>{selected.updated}</dd></div>
               </dl>
               <div className={styles.timeline}>
+                {selectedFollowUps > 0 && <p><i></i><span><strong>Follow-up added just now</strong>{selectedFollowUps} session follow-up{selectedFollowUps === 1 ? "" : "s"} recorded on this request.</span></p>}
                 <p><i></i><span><strong>Latest signal</strong>Automated monitoring attached device and network diagnostics.</span></p>
                 <p><i></i><span><strong>Requester update</strong>The issue is affecting a time-sensitive team workflow.</span></p>
                 <p><i></i><span><strong>Intake</strong>Request created through {selected.channel.toLowerCase()}.</span></p>
               </div>
-              {canWorkTickets ? <WorkflowButton action={primaryAction} recordId={selected.id} note={`${primaryLabel} from ticket workspace`} className="primary" onSuccess={() => setLocalStatus((current) => ({ ...current, [selected.id]: primaryAction === "ticket:assign" ? "Assigned" : primaryAction === "ticket:resolve" ? "Resolved" : selectedStatus }))}>{primaryAction === "ticket:assign" ? <UserRoundCheck size={14} /> : <CheckCircle2 size={14} />} {primaryLabel}</WorkflowButton> : <WorkflowButton action="ticket:comment" recordId={selected.id} note="Requester added a follow-up from the portfolio demo"><MessageSquareText size={14} /> Add follow-up</WorkflowButton>}
+              {canWorkTickets ? <WorkflowButton action={primaryAction} recordId={selected.id} note={`${primaryLabel} from ticket workspace`} className="primary" onSuccess={() => {
+                if (primaryAction === "ticket:comment") {
+                  setFollowUps((current) => ({ ...current, [selected.id]: (current[selected.id] || 0) + 1 }));
+                  return;
+                }
+                setTicketUpdates((current) => ({
+                  ...current,
+                  [selected.id]: {
+                    ...current[selected.id],
+                    status: primaryAction === "ticket:assign" ? "Assigned" : "Resolved",
+                    assignee: primaryAction === "ticket:assign" ? (session?.name || "Current technician") : selected.assignee,
+                    due: primaryAction === "ticket:resolve" ? "Met" : selected.due,
+                    updated: "Just now",
+                  },
+                }));
+              }}>{primaryAction === "ticket:assign" ? <UserRoundCheck size={14} /> : primaryAction === "ticket:comment" ? <MessageSquareText size={14} /> : <CheckCircle2 size={14} />} {primaryLabel}</WorkflowButton> : <WorkflowButton action="ticket:comment" recordId={selected.id} note="Requester added a follow-up from the portfolio demo" onSuccess={() => setFollowUps((current) => ({ ...current, [selected.id]: (current[selected.id] || 0) + 1 }))}><MessageSquareText size={14} /> Add follow-up</WorkflowButton>}
               <p className={styles.permissionNote}>Action adapts to the selected demo role and is checked by the server.</p>
             </aside>
           </div>
@@ -233,8 +276,8 @@ function PulseDeskWorkspace() {
             <header><div className={styles.assetIcon}><Laptop size={20} /></div><StatusBadge tone={asset.health > 85 ? "good" : asset.health > 60 ? "warn" : "danger"}>{asset.state}</StatusBadge></header>
             <p>{asset.tag}</p><h2>{asset.name}</h2><span>{asset.owner} · {asset.team}</span>
             <div className={styles.health}><ProgressBar value={asset.health} label="Device health" /></div>
-            <footer><div><Wrench size={13} /><span>{asset.detail}</span></div><small>Checked {asset.checked}</small></footer>
-            {role !== "requester" && <WorkflowButton action={role === "administrator" ? "asset:manage" : "asset:view"} recordId={asset.tag} note={role === "administrator" ? "Opened asset maintenance controls" : "Opened asset record"}>{role === "administrator" ? "Open controls" : "Inspect record"} <ChevronRight size={13} /></WorkflowButton>}
+            <footer><div><Wrench size={13} /><span>{asset.detail}</span></div><small aria-live="polite">{assetActivity[asset.tag] || `Checked ${asset.checked}`}</small></footer>
+            {role !== "requester" && <WorkflowButton action={role === "administrator" ? "asset:manage" : "asset:view"} recordId={asset.tag} note={role === "administrator" ? "Opened asset maintenance controls" : "Opened asset record"} onSuccess={() => setAssetActivity((current) => ({ ...current, [asset.tag]: role === "administrator" ? "Maintenance controls ready - opened just now" : "Asset record inspected just now" }))}>{assetActivity[asset.tag] ? (role === "administrator" ? "Controls ready" : "Record inspected") : (role === "administrator" ? "Open controls" : "Inspect record")} <ChevronRight size={13} /></WorkflowButton>}
           </article>)}</div>
           {role === "requester" && <div className={styles.roleBanner}><AlertTriangle size={16} /><div><strong>Asset details are protected</strong><span>Switch to Technician or Administrator to inspect managed-device records.</span></div></div>}
         </div>

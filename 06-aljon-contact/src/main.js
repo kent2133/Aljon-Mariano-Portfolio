@@ -18,7 +18,8 @@ app.innerHTML = `
       <a href="#experience">Experience</a>
       <a href="#capabilities">Stack</a>
       <a href="#portfolio">Sites</a>
-      <a href="#systems">Systems</a>
+      <a href="#systems">Demos</a>
+      <a href="#fullstack">Full-stack</a>
       <a href="#work">Work</a>
       <a class="mobile-contact-link" href="#contact">Contact</a>
     </nav>
@@ -42,7 +43,7 @@ app.innerHTML = `
       <div class="hero-index" aria-hidden="true">
         <span>01</span>
         <div></div>
-        <small>08</small>
+        <small>09</small>
       </div>
       <a class="scroll-cue" href="#about"><span>Scroll to connect</span><i></i></a>
     </section>
@@ -134,7 +135,8 @@ app.innerHTML = `
       <nav class="portfolio-categories reveal" aria-label="Portfolio categories">
         <span>Explore by collection</span>
         <a class="is-active" href="#portfolio"><i>01</i> Interactive landing pages</a>
-        <a href="#systems"><i>02</i> Full-stack business systems</a>
+        <a href="#systems"><i>02</i> Business system demos</a>
+        <a href="#fullstack"><i>03</i> Full-stack working system</a>
       </nav>
       <header class="portfolio-heading reveal">
         <p class="section-number">05 / Interactive landing pages</p>
@@ -215,66 +217,17 @@ app.innerHTML = `
     <section class="systems scene-section" id="systems" data-scene="systems" data-index="06">
       <header class="systems-heading reveal">
         <div>
-          <p class="section-number">06 / Full-stack business systems</p>
-          <h2>Real workflows.<br><em>Working software.</em></h2>
+          <p class="section-number">06 / Business system demos</p>
+          <h2>Five workflows.<br><em>One demo suite.</em></h2>
         </div>
-        <p>One complete service platform leads the collection, followed by five focused workflow demos. RepairFlow carries a repair from customer intake to pickup, while Operations Suite makes common business processes easy to explore.</p>
+        <p>Five focused, role-aware demos make common business processes easy to explore. Each one includes guided onboarding, visible state changes, and a workflow shaped around a real operational need.</p>
       </header>
 
-      <div class="systems-signal reveal" aria-label="Full-stack portfolio architecture">
-        <span>Next.js + TypeScript</span><i></i><span>Role-aware workflows</span><i></i><span>Supabase data layer</span><i></i><span>Three.js + GSAP</span>
+      <div class="systems-signal reveal" aria-label="Business system demo architecture">
+        <span>Next.js + TypeScript</span><i></i><span>Role-aware demos</span><i></i><span>Visible state changes</span><i></i><span>Guided tutorials</span>
       </div>
 
       <div class="systems-grid">
-        <article class="system-card system-card-featured system-repairflow">
-          <a class="system-visual" href="https://aljon-repairflow.vercel.app/" target="_blank" rel="noreferrer" aria-label="Open the live RepairFlow service platform">
-            <div class="system-window repair-window">
-              <div class="window-bar"><span></span><span></span><span></span><strong>RepairFlow / Service Platform</strong><em>Live workflow</em></div>
-              <div class="repair-dashboard">
-                <aside class="repair-sidebar" aria-hidden="true">
-                  <b>RF</b>
-                  <span class="is-active">Overview</span>
-                  <span>Repairs</span>
-                  <span>Customers</span>
-                  <span>Workshop</span>
-                </aside>
-                <div class="repair-main">
-                  <div class="repair-title"><span>Workshop overview</span><b>Monday, 09:42</b></div>
-                  <div class="repair-metrics">
-                    <span><small>Active repairs</small><strong>12</strong><i>+3 today</i></span>
-                    <span><small>Awaiting approval</small><strong>04</strong><i>Quotes sent</i></span>
-                    <span><small>Ready for pickup</small><strong>03</strong><i>Customers notified</i></span>
-                  </div>
-                  <div class="repair-queue">
-                    <div class="repair-queue-head"><span>Repair queue</span><small>Priority / Status</small></div>
-                    <span><i></i><b>RF-2048</b><strong>Phone display</strong><small>Diagnosing</small></span>
-                    <span><i></i><b>RF-2047</b><strong>Laptop battery</strong><small>Quote sent</small></span>
-                    <span><i></i><b>RF-2043</b><strong>Tablet charging</strong><small>In repair</small></span>
-                  </div>
-                </div>
-                <div class="repair-device-panel" aria-hidden="true">
-                  <div class="repair-device-heading"><span>Device inspection</span><b>RF-2048</b></div>
-                  <div class="repair-device">
-                    <span class="device-shadow"></span>
-                    <span class="device-shell"></span>
-                    <span class="device-board"><i></i><i></i><i></i></span>
-                    <span class="device-battery">72%</span>
-                    <span class="device-screen"></span>
-                  </div>
-                  <div class="repair-stage"><i></i><span>Intake</span><i></i><span>Diagnose</span><i></i><span>Quote</span><i></i><span>Repair</span></div>
-                </div>
-              </div>
-            </div>
-            <span class="system-open">Launch complete platform ↗</span>
-          </a>
-          <div class="system-copy">
-            <div><p>Flagship full-stack platform</p><h3>RepairFlow</h3></div>
-            <p>An end-to-end repair service platform connecting customer requests, administrator assignment, technician diagnosis, quotations, approvals, tracked workshop work, and pickup confirmation.</p>
-            <ul><li>Next.js + TypeScript</li><li>Role-aware lifecycle</li><li>Supabase integration</li><li>Three.js experience</li></ul>
-            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/08-repairflow" target="_blank" rel="noreferrer">View source ↗</a>
-          </div>
-        </article>
-
         <article class="system-card system-pulsedesk">
           <a class="system-visual" href="https://aljon-operations-suite.vercel.app/pulsedesk" target="_blank" rel="noreferrer" aria-label="Open the PulseDesk service operations system">
             <div class="system-window">
@@ -374,12 +327,79 @@ app.innerHTML = `
         </article>
       </div>
 
-      <p class="systems-footnote reveal"><span>One complete platform / five workflow demos</span> RepairFlow demonstrates an end-to-end product build; Operations Suite isolates five common business processes for guided exploration.</p>
+      <p class="systems-footnote reveal"><span>Collection 02 - Five guided workflow demos</span> Operations Suite isolates five common business processes so recruiters and clients can explore the roles, decisions, and visible results inside each one.</p>
     </section>
 
-    <section class="work scene-section" id="work" data-scene="work" data-index="07">
+    <section class="systems fullstack scene-section" id="fullstack" data-scene="fullstack" data-index="07">
+      <header class="systems-heading fullstack-heading reveal">
+        <div>
+          <p class="section-number">07 / Full-stack working system</p>
+          <h2>One product.<br><em>Built end to end.</em></h2>
+        </div>
+        <p>RepairFlow is the portfolio flagship: a complete repair lifecycle with customer, administrator, and technician workspaces, persistent demo data, tested domain logic, and a Supabase-backed deployment path.</p>
+      </header>
+
+      <div class="systems-signal fullstack-signal reveal" aria-label="RepairFlow full-stack architecture">
+        <span>Next.js + TypeScript</span><i></i><span>Supabase Auth + RLS</span><i></i><span>Tested lifecycle</span><i></i><span>Three.js + GSAP</span>
+      </div>
+
+      <div class="systems-grid fullstack-grid">
+        <article class="system-card system-card-featured system-repairflow">
+          <a class="system-visual" href="https://aljon-repairflow.vercel.app/" target="_blank" rel="noreferrer" aria-label="Open the live RepairFlow service platform">
+            <div class="system-window repair-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>RepairFlow / Service Platform</strong><em>Live workflow</em></div>
+              <div class="repair-dashboard">
+                <aside class="repair-sidebar" aria-hidden="true">
+                  <b>RF</b>
+                  <span class="is-active">Overview</span>
+                  <span>Repairs</span>
+                  <span>Customers</span>
+                  <span>Workshop</span>
+                </aside>
+                <div class="repair-main">
+                  <div class="repair-title"><span>Workshop overview</span><b>Monday, 09:42</b></div>
+                  <div class="repair-metrics">
+                    <span><small>Active repairs</small><strong>12</strong><i>+3 today</i></span>
+                    <span><small>Awaiting approval</small><strong>04</strong><i>Quotes sent</i></span>
+                    <span><small>Ready for pickup</small><strong>03</strong><i>Customers notified</i></span>
+                  </div>
+                  <div class="repair-queue">
+                    <div class="repair-queue-head"><span>Repair queue</span><small>Priority / Status</small></div>
+                    <span><i></i><b>RF-2048</b><strong>Phone display</strong><small>Diagnosing</small></span>
+                    <span><i></i><b>RF-2047</b><strong>Laptop battery</strong><small>Quote sent</small></span>
+                    <span><i></i><b>RF-2043</b><strong>Tablet charging</strong><small>In repair</small></span>
+                  </div>
+                </div>
+                <div class="repair-device-panel" aria-hidden="true">
+                  <div class="repair-device-heading"><span>Device inspection</span><b>RF-2048</b></div>
+                  <div class="repair-device">
+                    <span class="device-shadow"></span>
+                    <span class="device-shell"></span>
+                    <span class="device-board"><i></i><i></i><i></i></span>
+                    <span class="device-battery">72%</span>
+                    <span class="device-screen"></span>
+                  </div>
+                  <div class="repair-stage"><i></i><span>Intake</span><i></i><span>Diagnose</span><i></i><span>Quote</span><i></i><span>Repair</span></div>
+                </div>
+              </div>
+            </div>
+            <span class="system-open">Launch working platform ↗</span>
+          </a>
+          <div class="system-copy">
+            <div><p>Full-stack working system</p><h3>RepairFlow</h3></div>
+            <p>An end-to-end repair service platform connecting customer intake, administrator assignment, technician diagnosis, quotations, approvals, tracked workshop work, and pickup confirmation.</p>
+            <ul><li>Next.js + TypeScript</li><li>Three role workspaces</li><li>Supabase auth + schema</li><li>Tested ticket lifecycle</li></ul>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/08-repairflow" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+      </div>
+
+      <p class="systems-footnote reveal"><span>Collection 03 - Working full-stack application</span> The live portfolio mode keeps the complete workflow usable without credentials, while the codebase includes Supabase authentication, row-level security, storage, and a connected data schema.</p>
+    </section>
+
+    <section class="work scene-section" id="work" data-scene="work" data-index="08">
       <div class="work-heading reveal">
-        <p class="section-number">07 / Professional projects</p>
+        <p class="section-number">08 / Professional projects</p>
         <h2>Professional<br><em>projects.</em></h2>
       </div>
       <div class="project-list reveal">
@@ -406,9 +426,9 @@ app.innerHTML = `
       </div>
     </section>
 
-    <section class="contact scene-section" id="contact" data-scene="contact" data-index="08">
+    <section class="contact scene-section" id="contact" data-scene="contact" data-index="09">
       <div class="contact-inner reveal">
-        <p class="section-number">08 / Open channel</p>
+        <p class="section-number">09 / Open channel</p>
         <h2>Have a system<br>that should work<br><em>better?</em></h2>
         <p class="contact-lead">I am open to developer and IT opportunities, project collaborations, and conversations about useful digital work.</p>
         <div class="contact-links">
@@ -658,10 +678,16 @@ const SCENES = {
     camera: [5.65, 0.55, 11.7], monogram: 0.3, terminal: 0.48, rail: 0.72, nodes: 0.62, cards: 2.1,
   },
   systems: {
-    title: "Operations network",
-    detail: "Flagship platform / Five workflow demos",
+    title: "Business demo suite",
+    detail: "Five guided workflows / One connected suite",
     world: [0.15, -0.05, -0.4], rotation: [-0.04, -0.08, 0.015], scale: 0.68,
     camera: [0.45, 0.35, 12.8], monogram: 0.2, terminal: 0.38, rail: 1.42, nodes: 1.18, cards: 1.5,
+  },
+  fullstack: {
+    title: "RepairFlow platform",
+    detail: "Full-stack lifecycle / Role-aware delivery",
+    world: [2.55, -0.12, -0.25], rotation: [0.03, -0.52, -0.018], scale: 0.76,
+    camera: [5.15, 0.42, 11.9], monogram: 0.52, terminal: 1.28, rail: 0.92, nodes: 1.08, cards: 0.82,
   },
   work: {
     title: "Professional projects",
@@ -694,7 +720,7 @@ let previousScroll = scrollY;
 
 const statusTitle = document.querySelector(".scene-status strong");
 const statusDetail = document.querySelector(".scene-status p");
-const navAnchors = [...document.querySelectorAll(".nav-links a, .nav-cta")];
+const navAnchors = [...document.querySelectorAll(".nav-links a, .nav-cta, .portfolio-categories a")];
 const sceneSections = [...document.querySelectorAll(".scene-section")];
 const nodeLabels = [...document.querySelectorAll(".skill-labels span")];
 
@@ -769,7 +795,7 @@ class SoundEngine {
 
   sceneCue(index) {
     if (!this.started) return;
-    const roots = [329.63, 392, 293.66, 440, 493.88, 523.25, 349.23, 466.16];
+    const roots = [329.63, 392, 293.66, 440, 493.88, 523.25, 349.23, 466.16, 587.33];
     const root = roots[index] || 329.63;
     this.tone(root, 0, 0.24, 0.035, "sine", this.master);
     this.tone(root * 1.5, 0.07, 0.34, 0.024, "triangle", this.master);

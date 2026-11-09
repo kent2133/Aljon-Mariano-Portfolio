@@ -114,19 +114,19 @@ app.innerHTML = `
       <div class="stack-groups reveal">
         <article>
           <span>01</span><h3>Interface</h3>
-          <p>HTML · CSS · JavaScript · React · AdminLTE</p>
+          <p>HTML · CSS · JavaScript · TypeScript · React · Next.js</p>
         </article>
         <article>
           <span>02</span><h3>Application</h3>
-          <p>PHP · Laravel · Python · Django · C# · C++</p>
+          <p>PHP · Laravel · Python · Django · Three.js · GSAP</p>
         </article>
         <article>
           <span>03</span><h3>Data & delivery</h3>
-          <p>MySQL · MongoDB · Firebase · GitHub · VS Code</p>
+          <p>Supabase · MySQL · MongoDB · Firebase · GitHub · Vercel</p>
         </article>
       </div>
       <div class="skill-labels" aria-hidden="true">
-        ${["HTML / CSS", "JavaScript", "Laravel", "React", "Python / Django", "Data systems"].map((label, index) => `<span data-node="${index}"><i></i>${label}</span>`).join("")}
+        ${["TypeScript", "Next.js", "Supabase", "React", "Three.js / GSAP", "Data systems"].map((label, index) => `<span data-node="${index}"><i></i>${label}</span>`).join("")}
       </div>
     </section>
 
@@ -218,15 +218,64 @@ app.innerHTML = `
           <p class="section-number">06 / Full-stack business systems</p>
           <h2>Real workflows.<br><em>Working software.</em></h2>
         </div>
-        <p>Five role-aware applications built as one connected operations suite. Each demo combines a focused interface with server routes, permissions, validation, and an auditable workflow.</p>
+        <p>One complete service platform leads the collection, followed by five focused workflow demos. RepairFlow carries a repair from customer intake to pickup, while Operations Suite makes common business processes easy to explore.</p>
       </header>
 
-      <div class="systems-signal reveal" aria-label="Operations Suite architecture">
-        <span>Next.js application layer</span><i></i><span>Signed role sessions</span><i></i><span>Validated API routes</span><i></i><span>Optional Supabase persistence</span>
+      <div class="systems-signal reveal" aria-label="Full-stack portfolio architecture">
+        <span>Next.js + TypeScript</span><i></i><span>Role-aware workflows</span><i></i><span>Supabase data layer</span><i></i><span>Three.js + GSAP</span>
       </div>
 
       <div class="systems-grid">
-        <article class="system-card system-card-featured system-pulsedesk">
+        <article class="system-card system-card-featured system-repairflow">
+          <a class="system-visual" href="https://aljon-repairflow.vercel.app/" target="_blank" rel="noreferrer" aria-label="Open the live RepairFlow service platform">
+            <div class="system-window repair-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>RepairFlow / Service Platform</strong><em>Live workflow</em></div>
+              <div class="repair-dashboard">
+                <aside class="repair-sidebar" aria-hidden="true">
+                  <b>RF</b>
+                  <span class="is-active">Overview</span>
+                  <span>Repairs</span>
+                  <span>Customers</span>
+                  <span>Workshop</span>
+                </aside>
+                <div class="repair-main">
+                  <div class="repair-title"><span>Workshop overview</span><b>Monday, 09:42</b></div>
+                  <div class="repair-metrics">
+                    <span><small>Active repairs</small><strong>12</strong><i>+3 today</i></span>
+                    <span><small>Awaiting approval</small><strong>04</strong><i>Quotes sent</i></span>
+                    <span><small>Ready for pickup</small><strong>03</strong><i>Customers notified</i></span>
+                  </div>
+                  <div class="repair-queue">
+                    <div class="repair-queue-head"><span>Repair queue</span><small>Priority / Status</small></div>
+                    <span><i></i><b>RF-2048</b><strong>Phone display</strong><small>Diagnosing</small></span>
+                    <span><i></i><b>RF-2047</b><strong>Laptop battery</strong><small>Quote sent</small></span>
+                    <span><i></i><b>RF-2043</b><strong>Tablet charging</strong><small>In repair</small></span>
+                  </div>
+                </div>
+                <div class="repair-device-panel" aria-hidden="true">
+                  <div class="repair-device-heading"><span>Device inspection</span><b>RF-2048</b></div>
+                  <div class="repair-device">
+                    <span class="device-shadow"></span>
+                    <span class="device-shell"></span>
+                    <span class="device-board"><i></i><i></i><i></i></span>
+                    <span class="device-battery">72%</span>
+                    <span class="device-screen"></span>
+                  </div>
+                  <div class="repair-stage"><i></i><span>Intake</span><i></i><span>Diagnose</span><i></i><span>Quote</span><i></i><span>Repair</span></div>
+                </div>
+              </div>
+            </div>
+            <span class="system-open">Launch complete platform ↗</span>
+          </a>
+          <div class="system-copy">
+            <div><p>Flagship full-stack platform</p><h3>RepairFlow</h3></div>
+            <p>An end-to-end repair service platform connecting customer requests, administrator assignment, technician diagnosis, quotations, approvals, tracked workshop work, and pickup confirmation.</p>
+            <ul><li>Next.js + TypeScript</li><li>Role-aware lifecycle</li><li>Supabase integration</li><li>Three.js experience</li></ul>
+            <a href="https://github.com/kent2133/Aljon-Mariano-Portfolio/tree/main/08-repairflow" target="_blank" rel="noreferrer">View source ↗</a>
+          </div>
+        </article>
+
+        <article class="system-card system-pulsedesk">
           <a class="system-visual" href="https://aljon-operations-suite.vercel.app/pulsedesk" target="_blank" rel="noreferrer" aria-label="Open the PulseDesk service operations system">
             <div class="system-window">
               <div class="window-bar"><span></span><span></span><span></span><strong>PulseDesk / Service Operations</strong></div>
@@ -325,7 +374,7 @@ app.innerHTML = `
         </article>
       </div>
 
-      <p class="systems-footnote reveal"><span>One suite / five focused products</span> Demo roles make every workflow explorable; optional Supabase configuration adds durable cloud data.</p>
+      <p class="systems-footnote reveal"><span>One complete platform / five workflow demos</span> RepairFlow demonstrates an end-to-end product build; Operations Suite isolates five common business processes for guided exploration.</p>
     </section>
 
     <section class="work scene-section" id="work" data-scene="work" data-index="07">
@@ -610,7 +659,7 @@ const SCENES = {
   },
   systems: {
     title: "Operations network",
-    detail: "Five products · One full-stack foundation",
+    detail: "Flagship platform / Five workflow demos",
     world: [0.15, -0.05, -0.4], rotation: [-0.04, -0.08, 0.015], scale: 0.68,
     camera: [0.45, 0.35, 12.8], monogram: 0.2, terminal: 0.38, rail: 1.42, nodes: 1.18, cards: 1.5,
   },

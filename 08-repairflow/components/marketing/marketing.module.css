@@ -1,0 +1,1252 @@
+.page {
+  --page-gutter: clamp(1.25rem, 4vw, 4.5rem);
+  min-height: 100vh;
+  overflow: clip;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(200, 255, 61, 0.11), transparent 24rem),
+    var(--paper);
+}
+
+.skipLink {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.7rem 1rem;
+  color: var(--paper);
+  background: var(--ink);
+  transform: translateY(-180%);
+  transition: transform 180ms ease;
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: minmax(11rem, 1fr) auto minmax(11rem, 1fr);
+  align-items: center;
+  min-height: 5.25rem;
+  padding: 0 var(--page-gutter);
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 13%, transparent);
+  background: color-mix(in srgb, var(--paper) 87%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.65rem;
+  width: fit-content;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.brandMark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.brandMark span:first-child {
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.brandMark span:last-child {
+  position: absolute;
+  right: 0.12rem;
+  top: 0.12rem;
+  width: 0.38rem;
+  height: 0.38rem;
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+  background: var(--acid);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.25rem, 3vw, 2.8rem);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav a,
+.textLink {
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.nav a::after,
+.textLink::after {
+  position: absolute;
+  right: 0;
+  bottom: 0.22rem;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 220ms ease;
+}
+
+.nav a:hover::after,
+.nav a:focus-visible::after,
+.textLink:hover::after,
+.textLink:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.compactButton,
+.primaryButton,
+.darkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  color: var(--paper);
+  background: var(--ink);
+  transition: color 220ms ease, background-color 220ms ease, transform 220ms ease;
+}
+
+.compactButton:hover,
+.primaryButton:hover,
+.darkButton:hover {
+  color: var(--ink);
+  background: var(--acid);
+  transform: translateY(-2px);
+}
+
+.compactButton svg,
+.primaryButton svg,
+.darkButton svg {
+  flex: 0 0 auto;
+  transition: transform 220ms ease;
+}
+
+.compactButton:hover svg,
+.primaryButton:hover svg,
+.darkButton:hover svg {
+  transform: translateX(3px);
+}
+
+.storyGrid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(30rem, 1.08fr);
+  width: min(100%, 110rem);
+  margin: -5.25rem auto 0;
+}
+
+.storyCopy {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  padding-left: var(--page-gutter);
+  background:
+    linear-gradient(90deg, var(--paper) 0%, var(--paper) 86%, rgba(243, 244, 236, 0) 100%);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 9.5rem clamp(2.5rem, 4vw, 5rem) 4rem 0;
+}
+
+.heroEyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 25%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.heroEyebrow span:last-child {
+  color: var(--muted);
+}
+
+.hero h1 {
+  max-width: 11ch;
+  margin: clamp(2.2rem, 6vh, 5rem) 0 0;
+  font-size: clamp(4.1rem, 7.1vw, 8.4rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.79;
+}
+
+.hero h1 span {
+  display: block;
+  margin-top: 0.18em;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.79em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.06em;
+  line-height: 0.88;
+}
+
+.heroLead {
+  max-width: 35rem;
+  margin: clamp(2rem, 4vh, 3.6rem) 0 0;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 1.35vw, 1.28rem);
+  line-height: 1.55;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+
+.primaryButton,
+.secondaryButton,
+.darkButton,
+.outlineButton {
+  min-height: 3.6rem;
+  padding: 0.9rem 1.3rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.primaryButton {
+  min-width: 14.5rem;
+}
+
+.secondaryButton,
+.outlineButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 10.5rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 35%, transparent);
+  border-radius: 999px;
+  transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease, transform 220ms ease;
+}
+
+.secondaryButton:hover,
+.outlineButton:hover {
+  color: var(--paper);
+  border-color: var(--ink);
+  background: var(--ink);
+  transform: translateY(-2px);
+}
+
+.heroProof {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin: clamp(3rem, 7vh, 6.5rem) 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+}
+
+.heroProof div {
+  min-width: 0;
+  padding: 1rem 0.8rem 0 0;
+}
+
+.heroProof div + div {
+  padding-left: 1rem;
+  border-left: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+}
+
+.heroProof dt {
+  margin-bottom: 0.45rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+}
+
+.heroProof dd {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.workflowIntro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 86vh;
+  padding: 8rem clamp(2.5rem, 4vw, 5rem) 6rem 0;
+}
+
+.sectionLabel {
+  margin: 0 0 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.workflowIntro h2,
+.platformHeading h2,
+.rolesHeading h2,
+.finalCta h2 {
+  max-width: 11ch;
+  margin: 0;
+  font-size: clamp(3.7rem, 6.5vw, 7.5rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.85;
+}
+
+.workflowIntro h2 span,
+.platformHeading h2 span,
+.rolesHeading h2 span {
+  display: block;
+  margin-top: 0.17em;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.76em;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 0.92;
+}
+
+.workflowIntro > p:last-child {
+  max-width: 30rem;
+  margin: 2.5rem 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.workflowSteps {
+  border-top: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.workflowStep {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 7rem clamp(2.5rem, 4vw, 5rem) 7rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.stepMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stepMeta span:first-child {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  border-radius: 50%;
+  color: var(--ink);
+}
+
+.stepLabel {
+  width: fit-content;
+  margin: clamp(2.3rem, 6vh, 5rem) 0 1.1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--acid);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.workflowStep h3 {
+  max-width: 10ch;
+  margin: 0;
+  font-size: clamp(3rem, 5vw, 6rem);
+  font-weight: 500;
+  letter-spacing: -0.065em;
+  line-height: 0.9;
+}
+
+.stepBody {
+  max-width: 36rem;
+  margin: 2rem 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.2vw, 1.18rem);
+  line-height: 1.65;
+}
+
+.stepDetail {
+  max-width: 35rem;
+  margin: 2rem 0 0;
+  padding: 1.2rem 0 0 1.2rem;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 19%, transparent);
+  border-left: 3px solid var(--acid);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.sceneRail {
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  height: 100%;
+  color: #edf0e9;
+  background: #0b0e0b;
+}
+
+.sceneFrame {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 42rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 72% 38%, rgba(56, 215, 178, 0.13), transparent 28%),
+    radial-gradient(circle at 30% 76%, rgba(255, 131, 92, 0.09), transparent 25%),
+    linear-gradient(145deg, #101510, #070907 72%);
+}
+
+.sceneFrame::before {
+  position: absolute;
+  inset: 1.25rem;
+  z-index: 3;
+  border: 1px solid rgba(237, 240, 233, 0.14);
+  border-radius: 0.4rem;
+  pointer-events: none;
+  content: "";
+}
+
+.sceneFrame::after {
+  position: absolute;
+  top: 7rem;
+  left: 50%;
+  width: min(65vw, 43rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(200, 255, 61, 0.08);
+  border-radius: 50%;
+  pointer-events: none;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.modelMount {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  cursor: crosshair;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.modelCanvas {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.modelMount[data-ready="true"] .modelCanvas {
+  opacity: 1;
+}
+
+.modelFallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: min(46vw, 19rem);
+  aspect-ratio: 0.52;
+  border: 1px solid rgba(200, 255, 61, 0.45);
+  border-radius: 2.2rem;
+  opacity: 0.72;
+  transform: translate(-50%, -50%) rotate(8deg);
+  transition: opacity 300ms ease;
+}
+
+.modelFallback::before {
+  width: 86%;
+  height: 91%;
+  border: 1px solid rgba(237, 240, 233, 0.26);
+  border-radius: 1.8rem;
+  content: "";
+}
+
+.modelFallback span {
+  position: absolute;
+  width: 118%;
+  height: 100%;
+  border: 1px solid rgba(56, 215, 178, 0.15);
+  border-radius: inherit;
+}
+
+.modelFallback span:nth-child(2) {
+  width: 136%;
+}
+
+.modelFallback span:nth-child(3) {
+  width: 152%;
+}
+
+.modelMount[data-ready="true"] .modelFallback {
+  opacity: 0;
+}
+
+.sceneTopline {
+  position: absolute;
+  top: 2.35rem;
+  right: 2.5rem;
+  left: 2.5rem;
+  z-index: 4;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgba(237, 240, 233, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sceneTopline span:last-child {
+  position: relative;
+  padding-left: 1rem;
+  color: var(--acid);
+}
+
+.sceneTopline span:last-child::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0.8rem currentColor;
+  content: "";
+  transform: translateY(-50%);
+}
+
+.sceneCaption {
+  position: absolute;
+  bottom: 3.6rem;
+  left: 2.5rem;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.sceneNumber {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 1px solid rgba(237, 240, 233, 0.28);
+  border-radius: 50%;
+  color: var(--acid);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+.sceneCaption > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.24rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.sceneCaption small {
+  color: rgba(237, 240, 233, 0.46);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.progressDots {
+  position: absolute;
+  right: 2.5rem;
+  bottom: 4.8rem;
+  z-index: 4;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.progressDots span {
+  display: block;
+  width: 1.25rem;
+  height: 0.18rem;
+  border-radius: 999px;
+  background: rgba(237, 240, 233, 0.25);
+  transition: width 320ms ease, background-color 320ms ease;
+}
+
+.progressDots .progressDotActive {
+  width: 2.5rem;
+  background: var(--acid);
+}
+
+.sceneHint {
+  position: absolute;
+  right: 2.5rem;
+  bottom: 2.6rem;
+  z-index: 4;
+  margin: 0;
+  color: rgba(237, 240, 233, 0.48);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.platform {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: clamp(3rem, 8vw, 9rem);
+  padding: clamp(7rem, 12vw, 12rem) var(--page-gutter);
+  color: #eef0e9;
+  background:
+    radial-gradient(circle at 12% 78%, rgba(56, 215, 178, 0.1), transparent 25rem),
+    #0a0d0a;
+}
+
+.platformHeading {
+  align-self: start;
+  position: sticky;
+  top: 8.5rem;
+}
+
+.platformHeading h2 {
+  max-width: 9ch;
+  font-size: clamp(4rem, 7vw, 8.5rem);
+}
+
+.platformHeading > p:last-child {
+  max-width: 33rem;
+  margin: 2.5rem 0 0;
+  color: rgba(238, 240, 233, 0.58);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 1px;
+  border: 1px solid rgba(238, 240, 233, 0.16);
+  background: rgba(238, 240, 233, 0.16);
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  min-height: 24rem;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  background: #0a0d0a;
+  transition: background-color 280ms ease;
+}
+
+.featureCard:hover {
+  background: #111812;
+}
+
+.featureCard > span {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid rgba(238, 240, 233, 0.22);
+  border-radius: 50%;
+  color: var(--acid);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+.featureCard h3 {
+  max-width: 10ch;
+  margin: auto 0 1.1rem;
+  font-size: clamp(1.8rem, 2.4vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.featureCard p {
+  max-width: 30rem;
+  margin: 0;
+  color: rgba(238, 240, 233, 0.58);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.roles {
+  position: relative;
+  z-index: 4;
+  padding: clamp(7rem, 12vw, 12rem) var(--page-gutter);
+  background: var(--surface);
+}
+
+.rolesHeading {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 2rem;
+  margin-bottom: clamp(5rem, 9vw, 9rem);
+}
+
+.rolesHeading h2 {
+  grid-column: 2;
+  max-width: 10ch;
+  font-size: clamp(4.1rem, 7.2vw, 8.8rem);
+}
+
+.rolesHeading .sectionLabel {
+  grid-column: 1;
+}
+
+.roleList {
+  border-top: 1px solid color-mix(in srgb, var(--ink) 24%, transparent);
+}
+
+.roleCard {
+  display: grid;
+  grid-template-columns: 0.2fr 0.9fr 0.9fr;
+  gap: 2rem;
+  align-items: start;
+  padding: clamp(2rem, 4vw, 4rem) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 24%, transparent);
+}
+
+.roleIndex {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+}
+
+.roleCard > div:nth-child(2) > p {
+  margin: 0 0 1.1rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.roleCard h3 {
+  max-width: 11ch;
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+}
+
+.roleBody {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.finalCta {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.7fr);
+  gap: 4rem;
+  align-items: end;
+  min-height: 42rem;
+  padding: clamp(5rem, 9vw, 9rem) var(--page-gutter);
+  background:
+    radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.48), transparent 21rem),
+    var(--acid);
+}
+
+.finalCta h2 {
+  max-width: 12ch;
+  font-size: clamp(4rem, 7.5vw, 9rem);
+}
+
+.finalActions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.darkButton,
+.outlineButton {
+  min-height: 4rem;
+}
+
+.outlineButton {
+  border-color: color-mix(in srgb, var(--ink) 42%, transparent);
+}
+
+.footer {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  align-items: end;
+  min-height: 16rem;
+  padding: 3rem var(--page-gutter);
+  color: rgba(238, 240, 233, 0.76);
+  background: var(--ink);
+}
+
+.footer .brand {
+  align-self: start;
+  color: #eef0e9;
+}
+
+.footer .brandMark span:last-child {
+  border-color: var(--ink);
+}
+
+.footer > p {
+  max-width: 28rem;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.footer > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.footer > div a {
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid currentColor;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 1180px) {
+  .header {
+    grid-template-columns: 1fr auto auto;
+    gap: 2rem;
+  }
+
+  .nav {
+    gap: 1.2rem;
+    font-size: 0.68rem;
+  }
+
+  .storyGrid {
+    grid-template-columns: minmax(0, 0.96fr) minmax(27rem, 1.04fr);
+  }
+
+  .hero h1 {
+    font-size: clamp(3.8rem, 7vw, 6.8rem);
+  }
+
+  .platform {
+    gap: 4rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .header {
+    grid-template-columns: 1fr auto;
+    gap: 0.3rem 1rem;
+    min-height: 7.2rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.55rem;
+  }
+
+  .nav {
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .textLink {
+    display: none;
+  }
+
+  .storyGrid {
+    display: flex;
+    flex-direction: column;
+    margin-top: -7.2rem;
+  }
+
+  .storyCopy {
+    display: contents;
+    background: none;
+  }
+
+  .hero {
+    order: 1;
+    min-height: auto;
+    padding: 10.5rem var(--page-gutter) 4rem;
+  }
+
+  .hero h1 {
+    max-width: 12ch;
+    font-size: clamp(4rem, 12vw, 7rem);
+  }
+
+  .heroLead {
+    max-width: 42rem;
+  }
+
+  .sceneRail {
+    position: sticky;
+    top: 7.2rem;
+    z-index: 6;
+    order: 2;
+    height: min(49vh, 31rem);
+  }
+
+  .sceneFrame {
+    position: relative;
+    top: auto;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .workflowIntro {
+    order: 3;
+    justify-content: flex-end;
+    min-height: 112vh;
+    padding: calc(49vh + 5rem) var(--page-gutter) 7rem;
+  }
+
+  .workflowSteps {
+    order: 4;
+    padding: 0 var(--page-gutter);
+  }
+
+  .workflowStep {
+    justify-content: flex-end;
+    min-height: 112vh;
+    padding: calc(49vh + 5rem) 0 7rem;
+  }
+
+  .sceneRail + * {
+    order: 3;
+  }
+
+  .sceneFrame::after {
+    width: min(82vw, 42rem);
+  }
+
+  .modelMount {
+    cursor: default;
+  }
+
+  .platform {
+    grid-template-columns: 1fr;
+  }
+
+  .platformHeading {
+    position: static;
+  }
+
+  .platformHeading h2 {
+    max-width: 10ch;
+  }
+
+  .rolesHeading {
+    grid-template-columns: 1fr;
+  }
+
+  .rolesHeading h2,
+  .rolesHeading .sectionLabel {
+    grid-column: 1;
+  }
+
+  .roleCard {
+    grid-template-columns: 0.18fr 0.82fr;
+  }
+
+  .roleBody {
+    grid-column: 2;
+  }
+
+  .finalCta {
+    grid-template-columns: 1fr;
+  }
+
+  .finalActions {
+    max-width: 28rem;
+  }
+
+  .footer {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer > div {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding-right: 0.8rem;
+  }
+
+  .brand {
+    font-size: 0.86rem;
+  }
+
+  .brandMark {
+    width: 1.55rem;
+    height: 1.55rem;
+  }
+
+  .compactButton {
+    min-height: 2.65rem;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.7rem;
+  }
+
+  .compactButton svg {
+    display: none;
+  }
+
+  .hero {
+    padding-top: 9.75rem;
+  }
+
+  .heroEyebrow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.6rem, 17vw, 5.7rem);
+  }
+
+  .heroLead {
+    font-size: 1rem;
+  }
+
+  .heroActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .heroProof {
+    grid-template-columns: 1fr;
+  }
+
+  .heroProof div {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  }
+
+  .heroProof div + div {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .heroProof dt {
+    margin: 0;
+  }
+
+  .sceneFrame::before {
+    inset: 0.75rem;
+  }
+
+  .sceneTopline {
+    top: 1.5rem;
+    right: 1.4rem;
+    left: 1.4rem;
+  }
+
+  .sceneTopline span:first-child {
+    display: none;
+  }
+
+  .sceneTopline span:last-child {
+    margin-left: auto;
+  }
+
+  .sceneCaption {
+    bottom: 3.15rem;
+    left: 1.4rem;
+  }
+
+  .sceneHint {
+    right: 1.4rem;
+    bottom: 1.5rem;
+  }
+
+  .progressDots {
+    right: 1.4rem;
+    bottom: 4.2rem;
+  }
+
+  .progressDots span {
+    width: 0.8rem;
+  }
+
+  .progressDots .progressDotActive {
+    width: 1.5rem;
+  }
+
+  .workflowIntro h2,
+  .platformHeading h2,
+  .rolesHeading h2,
+  .finalCta h2 {
+    font-size: clamp(3.45rem, 15vw, 5.5rem);
+  }
+
+  .workflowStep h3 {
+    font-size: clamp(3.1rem, 13vw, 5rem);
+  }
+
+  .featureGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .featureCard {
+    min-height: 19rem;
+  }
+
+  .roleCard {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .roleBody {
+    grid-column: 1;
+  }
+
+  .finalCta {
+    min-height: 38rem;
+  }
+
+  .footer {
+    grid-template-columns: 1fr;
+  }
+
+  .footer > div {
+    grid-column: 1;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modelMount {
+    cursor: default;
+  }
+
+  .modelCanvas,
+  .modelFallback,
+  .progressDots span,
+  .compactButton,
+  .primaryButton,
+  .darkButton,
+  .secondaryButton,
+  .outlineButton {
+    transition: none;
+  }
+
+  .sceneHint {
+    display: none;
+  }
+}

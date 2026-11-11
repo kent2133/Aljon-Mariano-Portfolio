@@ -1359,7 +1359,8 @@
 }
 
 .guideDot,
-.guideDotActive {
+.guideDotActive,
+.guideDotComplete {
   width: 24px;
   height: 4px;
   border-radius: 99px;
@@ -1367,7 +1368,13 @@
 }
 
 .guideDotActive {
+  width: 34px;
   background: #91bc20;
+  animation: guidePhasePulse 1.5s ease-in-out infinite;
+}
+
+.guideDotComplete {
+  background: #58731d;
 }
 
 .guideActions {
@@ -1451,6 +1458,18 @@
   width: 100%;
 }
 
+.questBranchActions {
+  display: grid;
+  gap: 8px;
+}
+
+.questPanel .questBranchActions .secondaryButton {
+  width: 100%;
+  border-color: #46503f;
+  color: #dce3d7;
+  background: #1a2018;
+}
+
 .questWaiting {
   display: flex;
   align-items: center;
@@ -1475,10 +1494,25 @@
   z-index: 80;
   border-radius: 12px;
   box-shadow: 0 0 0 4px rgba(200, 255, 61, 0.86), 0 0 0 10px rgba(200, 255, 61, 0.16), 0 18px 55px rgba(17, 21, 16, 0.24);
+  animation: tourTargetPulse 1.45s ease-in-out infinite;
+  will-change: box-shadow;
 }
 
 @keyframes questPulse {
   50% { opacity: 0.45; transform: scale(0.78); }
+}
+
+@keyframes guidePhasePulse {
+  50% { opacity: 0.58; }
+}
+
+@keyframes tourTargetPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(200, 255, 61, 0.9), 0 0 0 8px rgba(200, 255, 61, 0.12), 0 18px 55px rgba(17, 21, 16, 0.24);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(200, 255, 61, 1), 0 0 0 17px rgba(200, 255, 61, 0.23), 0 22px 65px rgba(17, 21, 16, 0.3);
+  }
 }
 
 .toast {
@@ -1807,7 +1841,9 @@
   .primaryButton,
   .secondaryButton,
   .toast,
-  .questWaiting i {
+  .questWaiting i,
+  .guideDotActive,
+  :global([data-tour-active="true"]) {
     transition: none;
     animation: none;
   }

@@ -29,7 +29,7 @@ export function WorkflowActions({ ticket, role, technicians, dispatch, onComplet
 
   if (role === "customer" && ticket.status === "awaiting-approval" && ticket.quote) {
     return (
-      <div className={styles.nextAction} data-tour="next-action">
+      <div className={styles.nextAction} data-tour="quote-decision">
         <span className={styles.actionIcon}><Send size={18} /></span>
         <div className={styles.actionCopy}>
           <p className={styles.eyebrow}>Your next action</p>
@@ -64,7 +64,7 @@ export function WorkflowActions({ ticket, role, technicians, dispatch, onComplet
 
   if ((role === "customer" || role === "administrator") && ticket.status === "ready-for-pickup") {
     return (
-      <div className={styles.nextAction} data-tour="next-action">
+      <div className={styles.nextAction} data-tour="confirm-pickup">
         <span className={styles.actionIcon}><Check size={18} /></span>
         <div className={styles.actionCopy}>
           <p className={styles.eyebrow}>Final step</p>
@@ -89,7 +89,7 @@ export function WorkflowActions({ ticket, role, technicians, dispatch, onComplet
     return (
       <form
         className={styles.actionForm}
-        data-tour="next-action"
+        data-tour="admin-assign"
         onSubmit={(event) => submit(
           event,
           { type: "assign-technician", ticketId: ticket.id, technicianId },
@@ -124,7 +124,7 @@ export function WorkflowActions({ ticket, role, technicians, dispatch, onComplet
     return (
       <form
         className={styles.actionForm}
-        data-tour="next-action"
+        data-tour="record-diagnosis"
         onSubmit={(event) => submit(
           event,
           { type: "record-diagnosis", ticketId: ticket.id, diagnosis },
@@ -161,7 +161,7 @@ export function WorkflowActions({ ticket, role, technicians, dispatch, onComplet
     return (
       <form
         className={styles.actionForm}
-        data-tour="next-action"
+        data-tour={ticket.quote?.status === "declined" ? "revise-quote" : "prepare-quote"}
         onSubmit={(event) => submit(
           event,
           { type: "submit-quote", ticketId: ticket.id, quote: { parts: Number(parts), labor: Number(labor) } },
@@ -195,7 +195,7 @@ export function WorkflowActions({ ticket, role, technicians, dispatch, onComplet
 
   if (role === "technician" && ticket.status === "approved") {
     return (
-      <div className={styles.nextAction} data-tour="next-action">
+      <div className={styles.nextAction} data-tour="start-repair">
         <span className={styles.actionIcon}><Play size={18} /></span>
         <div className={styles.actionCopy}>
           <p className={styles.eyebrow}>Approved work</p>
@@ -220,7 +220,7 @@ export function WorkflowActions({ ticket, role, technicians, dispatch, onComplet
     return (
       <form
         className={styles.actionForm}
-        data-tour="next-action"
+        data-tour="complete-repair"
         onSubmit={(event) => submit(
           event,
           { type: "complete-repair", ticketId: ticket.id, summary },

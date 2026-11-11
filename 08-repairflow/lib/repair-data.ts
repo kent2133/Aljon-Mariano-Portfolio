@@ -303,3 +303,40 @@ export function createSeedState(): RepairState {
     activity: activityFromTickets(freshTickets),
   };
 }
+
+export function createTutorialState(): RepairState {
+  const state = createSeedState();
+  const tutorialTickets = state.tickets.map((ticket) => {
+    if (ticket.id !== "RF-1048") return ticket;
+
+    const createdEvent = ticket.timeline.find((event) => event.kind === "created");
+    const {
+      assignedTechnicianId: _assignedTechnicianId,
+      diagnosis: _diagnosis,
+      quote: _quote,
+      repairSummary: _repairSummary,
+      estimatedCompletion: _estimatedCompletion,
+      ...baseTicket
+    } = ticket;
+
+    return {
+      ...baseTicket,
+      status: "submitted" as const,
+      updatedAt: ticket.createdAt,
+      timeline: createdEvent ? [createdEvent] : [],
+    };
+  });
+
+  return {
+    ...state,
+    currentRole: "administrator",
+    selectedTicketId: "RF-1048",
+    tickets: tutorialTickets,
+    technicians: state.technicians.map((technician) =>
+      technician.id === DEMO_TECHNICIAN_ID
+        ? { ...technician, activeTickets: Math.max(0, technician.activeTickets - 1) }
+        : technician,
+    ),
+    activity: activityFromTickets(tutorialTickets),
+  };
+}

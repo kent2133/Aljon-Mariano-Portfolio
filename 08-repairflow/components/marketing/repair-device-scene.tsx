@@ -546,6 +546,33 @@ export function RepairDeviceScene({ onStepChange }: RepairDeviceSceneProps) {
     warmLight.position.set(1.2, -4, 2.5);
     scene.add(warmLight);
 
+    const introState = {
+      y: reduceMotion ? 0 : 0.72,
+      scale: reduceMotion ? 1 : 0.84,
+      tilt: reduceMotion ? 0 : -0.08,
+    };
+    const lightState = {
+      acid: reduceMotion ? 18 : 0,
+      teal: reduceMotion ? 13 : 2,
+    };
+    let introTimeline: gsap.core.Timeline | null = null;
+
+    if (!reduceMotion) {
+      ring.scale.setScalar(0.76);
+      innerRing.scale.setScalar(0.82);
+      ringMaterial.opacity = 0;
+      innerRingMaterial.opacity = 0;
+      introTimeline = gsap
+        .timeline({ delay: 0.12 })
+        .to(introState, { y: 0, scale: 1, tilt: 0, duration: 1.35, ease: "power3.out" }, 0)
+        .to(lightState, { acid: 18, teal: 13, duration: 1.2, ease: "power2.out" }, 0.08)
+        .to(ring.scale, { x: 1, y: 1, z: 1, duration: 1.25, ease: "power3.out" }, 0.12)
+        .to(innerRing.scale, { x: 1, y: 1, z: 1, duration: 1.35, ease: "power3.out" }, 0.18)
+        .to(ringMaterial, { opacity: 0.2, duration: 0.9, ease: "power2.out" }, 0.16)
+        .to(innerRingMaterial, { opacity: 0.1, duration: 0.95, ease: "power2.out" }, 0.22)
+        .to(device.materials.glass, { emissiveIntensity: 0.22, duration: 0.42, yoyo: true, repeat: 1 }, 0.42);
+    }
+
     const highlightMaterials = [
       device.materials.display,
       device.materials.board,
@@ -553,6 +580,14 @@ export function RepairDeviceScene({ onStepChange }: RepairDeviceSceneProps) {
       device.materials.battery,
       device.materials.shell,
     ];
+    const overviewEmissive = new Map([
+      [device.materials.shell, 0.08],
+      [device.materials.frame, 0.05],
+      [device.materials.battery, 0.05],
+      [device.materials.board, 0.08],
+      [device.materials.display, 0.5],
+      [device.materials.glass, 0.04],
+    ]);
     let activeStage = -1;
     let completionPulse: gsap.core.Timeline | null = null;
 
@@ -609,25 +644,30 @@ export function RepairDeviceScene({ onStepChange }: RepairDeviceSceneProps) {
 
     const activateStage = (index: number) => {
       if (activeStage === index) return;
+      if (introTimeline) {
+        introTimeline.progress(1).kill();
+        introTimeline = null;
+      }
       activeStage = index;
       onStepChange(index);
       setPose(stagePoses[index]);
+      const duration = reduceMotion ? 0 : 0.55;
 
       completionPulse?.kill();
       completionPulse = null;
 
       Object.values(device.materials).forEach((material) => {
-        gsap.to(material, { emissiveIntensity: 0.05, duration: 0.45, overwrite: true });
+        gsap.to(material, { emissiveIntensity: 0.05, duration, overwrite: true });
       });
       gsap.to(highlightMaterials[index], {
         emissiveIntensity: index === 4 ? 0.42 : 0.72,
-        duration: 0.55,
+        duration,
         overwrite: true,
       });
 
       gsap.to(ringMaterial, {
         opacity: index === 4 ? 0.42 : 0.2,
-        duration: 0.7,
+        duration: reduceMotion ? 0 : 0.7,
         overwrite: true,
       });
 
@@ -639,24 +679,38 @@ export function RepairDeviceScene({ onStepChange }: RepairDeviceSceneProps) {
       }
     };
 
-    const triggers: ScrollTrigger[] = [];
-    if (!reduceMotion) {
-      document.querySelectorAll<HTMLElement>("[data-repair-step]").forEach((element, index) => {
-        const trigger = ScrollTrigger.create({
-          trigger: element,
-          start: "top 58%",
-          end: "bottom 42%",
-          onEnter: () => activateStage(index),
-          onEnterBack: () => activateStage(index),
-          onLeaveBack: index === 0 ? () => {
-            activeStage = -1;
-            onStepChange(0);
-            setPose(heroPose);
-          } : undefined,
+    const showOverview = () => {
+      activeStage = -1;
+      onStepChange(-1);
+      setPose(heroPose);
+      completionPulse?.kill();
+      completionPulse = null;
+      overviewEmissive.forEach((intensity, material) => {
+        gsap.to(material, {
+          emissiveIntensity: intensity,
+          duration: reduceMotion ? 0 : 0.45,
+          overwrite: true,
         });
-        triggers.push(trigger);
       });
-    }
+      gsap.to(ringMaterial, {
+        opacity: 0.2,
+        duration: reduceMotion ? 0 : 0.45,
+        overwrite: true,
+      });
+    };
+
+    const triggers: ScrollTrigger[] = [];
+    document.querySelectorAll<HTMLElement>("[data-repair-step]").forEach((element, index) => {
+      const trigger = ScrollTrigger.create({
+        trigger: element,
+        start: "top 58%",
+        end: "bottom 42%",
+        onEnter: () => activateStage(index),
+        onEnterBack: () => activateStage(index),
+        onLeaveBack: index === 0 ? showOverview : undefined,
+      });
+      triggers.push(trigger);
+    });
 
     let targetPointerX = 0;
     let targetPointerY = 0;
@@ -690,12 +744,16 @@ export function RepairDeviceScene({ onStepChange }: RepairDeviceSceneProps) {
     const render = () => {
       const elapsed = clock.getElapsedTime();
       if (!reduceMotion) {
-        floatRig.position.y = Math.sin(elapsed * 0.72) * 0.055;
+        floatRig.position.y = introState.y + Math.sin(elapsed * 0.72) * 0.065;
+        floatRig.rotation.z = introState.tilt + Math.sin(elapsed * 0.4) * 0.009;
+        floatRig.scale.setScalar(introState.scale);
         pointerRig.rotation.y += (targetPointerX - pointerRig.rotation.y) * 0.04;
         pointerRig.rotation.x += (targetPointerY - pointerRig.rotation.x) * 0.04;
         ring.rotation.z = elapsed * 0.035;
         innerRing.rotation.z = -elapsed * 0.022;
         particles.rotation.z = elapsed * 0.012;
+        acidLight.intensity = lightState.acid + Math.sin(elapsed * 1.1) * 1.4;
+        tealLight.intensity = lightState.teal + Math.sin(elapsed * 0.9 + 0.8) * 1.1;
       }
       renderer.render(scene, camera);
       animationFrame = window.requestAnimationFrame(render);
@@ -706,6 +764,7 @@ export function RepairDeviceScene({ onStepChange }: RepairDeviceSceneProps) {
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
+      introTimeline?.kill();
       completionPulse?.kill();
       triggers.forEach((trigger) => trigger.kill());
       resizeObserver.disconnect();

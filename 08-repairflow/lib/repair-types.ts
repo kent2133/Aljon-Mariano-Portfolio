@@ -125,6 +125,7 @@ export type RepairAction =
   | { type: "start-repair"; ticketId: string; now?: string }
   | { type: "complete-repair"; ticketId: string; summary: string; now?: string }
   | { type: "confirm-pickup"; ticketId: string; now?: string }
+  | { type: "start-tutorial" }
   | { type: "reset-demo" };
 
 export interface WorkspaceMetric {

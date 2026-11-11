@@ -1,63 +1,38 @@
 "use client";
 
-import { ArrowRight, Sparkles, X } from "lucide-react";
+import { ArrowRight, GitBranch, Sparkles, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useRepairStore } from "@/lib/repair-store";
+import {
+  getNextTutorialStep,
+  getTutorialTicket,
+  isDeclinedDecision,
+  isTutorialStepComplete,
+  TUTORIAL_MILESTONES,
+  TUTORIAL_START_STEP,
+  TUTORIAL_TICKET_ID,
+  tutorialCompletedMessage,
+  tutorialSteps,
+  type TutorialStepId,
+} from "./workspace-guide-logic";
 import styles from "./workspace.module.css";
 
-const GUIDE_KEY = "repairflow-workspace-guide-seen-v2";
+const GUIDE_KEY = "repairflow-workspace-guide-seen-v3";
 
-const questSteps = [
-  {
-    eyebrow: "Quest 1 of 5",
-    title: "Switch to the Customer view",
-    text: "Open Viewing as in the top-right corner and select Customer. This reveals Maya's repairs and approval tasks.",
-    target: "role-menu",
-  },
-  {
-    eyebrow: "Quest 2 of 5",
-    title: "Approve the Pixel 9 Pro quote",
-    text: "The Pixel 9 Pro ticket is ready for a decision. Review its quote, then choose Approve quote in the detail panel.",
-    target: "next-action",
-  },
-  {
-    eyebrow: "Quest 3 of 5",
-    title: "Switch to the Technician view",
-    text: "Return to Viewing as and select Technician. The same approved repair will remain selected for workshop action.",
-    target: "role-menu",
-  },
-  {
-    eyebrow: "Quest 4 of 5",
-    title: "Start the approved repair",
-    text: "Move the device to the workbench with Start repair. Watch the status, timeline, and dashboard metrics update together.",
-    target: "next-action",
-  },
-  {
-    eyebrow: "Quest 5 of 5",
-    title: "Complete the workshop record",
-    text: "Describe the completed work and final test, then mark the device ready for pickup.",
-    target: "next-action",
-  },
-] as const;
-
-type GuideMode = "intro" | "quest" | null;
+type GuideMode = "intro" | "quest" | "declined" | null;
 
 export function WorkspaceGuide({ replaySignal }: { replaySignal: number }) {
   const { state, dispatch } = useRepairStore();
   const [mode, setMode] = useState<GuideMode>(null);
-  const [step, setStep] = useState(0);
+  const [stepId, setStepId] = useState<TutorialStepId>(TUTORIAL_START_STEP);
+  const [completedTasks, setCompletedTasks] = useState(0);
 
-  const tutorialTicket = useMemo(
-    () => state.tickets.find((ticket) => ticket.id === "RF-1048"),
-    [state.tickets],
-  );
-  const stepComplete = useMemo(() => {
-    if (step === 0) return state.currentRole === "customer";
-    if (step === 1) return ["approved", "in-repair", "ready-for-pickup", "completed"].includes(tutorialTicket?.status ?? "");
-    if (step === 2) return state.currentRole === "technician";
-    if (step === 3) return ["in-repair", "ready-for-pickup", "completed"].includes(tutorialTicket?.status ?? "");
-    return ["ready-for-pickup", "completed"].includes(tutorialTicket?.status ?? "");
-  }, [state.currentRole, step, tutorialTicket?.status]);
+  const tutorialTicket = useMemo(() => getTutorialTicket(state), [state]);
+  const step = tutorialSteps[stepId];
+  const stepComplete = isTutorialStepComplete(stepId, state);
+  const nextStep = stepComplete ? getNextTutorialStep(stepId, state) : null;
+  const finalStepComplete = stepComplete && nextStep === null;
+  const declinedDecision = stepComplete && isDeclinedDecision(stepId, state);
 
   useEffect(() => {
     try {
@@ -69,18 +44,35 @@ export function WorkspaceGuide({ replaySignal }: { replaySignal: number }) {
 
   useEffect(() => {
     if (replaySignal > 0) {
-      setStep(0);
+      setStepId(TUTORIAL_START_STEP);
+      setCompletedTasks(0);
       setMode("intro");
     }
   }, [replaySignal]);
 
   useEffect(() => {
-    if (mode !== "quest") return;
+    document.querySelectorAll<HTMLElement>("[data-tour-active]").forEach((target) => {
+      delete target.dataset.tourActive;
+    });
+
+    if (mode !== "quest" || stepComplete) return;
+
+    if (step.target !== "role-menu" && state.selectedTicketId !== TUTORIAL_TICKET_ID) {
+      dispatch({ type: "select-ticket", ticketId: TUTORIAL_TICKET_ID });
+      return;
+    }
+
     const frame = window.requestAnimationFrame(() => {
-      const target = document.querySelector<HTMLElement>(`[data-tour="${questSteps[step].target}"]`);
+      const target = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
       if (!target) return;
+
       target.dataset.tourActive = "true";
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      const bounds = target.getBoundingClientRect();
+      const topBoundary = 92;
+      const bottomBoundary = window.innerHeight - 92;
+      if (bounds.top < topBoundary || bounds.bottom > bottomBoundary) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     });
 
     return () => {
@@ -89,7 +81,18 @@ export function WorkspaceGuide({ replaySignal }: { replaySignal: number }) {
         delete target.dataset.tourActive;
       });
     };
-  }, [mode, state.currentRole, step, tutorialTicket?.status]);
+  }, [
+    mode,
+    state.currentRole,
+    state.selectedTicketId,
+    step.target,
+    stepComplete,
+    stepId,
+    tutorialTicket?.assignedTechnicianId,
+    tutorialTicket?.diagnosis,
+    tutorialTicket?.quote?.status,
+    tutorialTicket?.status,
+  ]);
 
   function rememberGuide() {
     try {
@@ -105,18 +108,26 @@ export function WorkspaceGuide({ replaySignal }: { replaySignal: number }) {
   }
 
   function startQuest() {
-    dispatch({ type: "reset-demo" });
-    setStep(0);
+    dispatch({ type: "start-tutorial" });
+    setStepId(TUTORIAL_START_STEP);
+    setCompletedTasks(0);
     setMode("quest");
   }
 
   function continueQuest() {
     if (!stepComplete) return;
-    if (step === questSteps.length - 1) {
+    if (!nextStep) {
       dismissGuide();
       return;
     }
-    setStep((current) => current + 1);
+
+    setStepId(nextStep);
+    setCompletedTasks((current) => current + 1);
+  }
+
+  function finishDeclinedPath() {
+    setCompletedTasks((current) => current + 1);
+    setMode("declined");
   }
 
   if (mode === null) return null;
@@ -134,9 +145,9 @@ export function WorkspaceGuide({ replaySignal }: { replaySignal: number }) {
             <Sparkles size={20} />
           </div>
           <p className={styles.eyebrow}>Interactive product tutorial</p>
-          <h2 id="workspace-guide-title">Learn RepairFlow by completing a repair.</h2>
+          <h2 id="workspace-guide-title">Learn RepairFlow across all three roles.</h2>
           <p>
-            The tutorial gives you one task at a time, waits for you to perform it, and confirms the result before continuing. Starting it restores the seeded portfolio data.
+            Route a repair as Administrator, diagnose it as Technician, and decide as Customer. Approve and decline are both supported, so the guide follows the workflow you choose. Starting restores dedicated tutorial data.
           </p>
           <div className={styles.guideActions}>
             <button type="button" className={styles.secondaryButton} onClick={dismissGuide}>
@@ -151,7 +162,32 @@ export function WorkspaceGuide({ replaySignal }: { replaySignal: number }) {
     );
   }
 
-  const quest = questSteps[step];
+  if (mode === "declined") {
+    return (
+      <aside className={styles.questPanel} aria-live="polite" aria-label="Interactive RepairFlow tutorial complete">
+        <button type="button" className={styles.questClose} onClick={dismissGuide} aria-label="Close interactive tutorial">
+          <X size={16} />
+        </button>
+        <div className={styles.questHeader}>
+          <span><GitBranch size={14} /> Decision path complete</span>
+          <small>{completedTasks} tasks</small>
+        </div>
+        <p className={styles.eyebrow}>Valid customer outcome</p>
+        <h2>The declined quote was handled correctly.</h2>
+        <p>RepairFlow recorded the customer's decision, returned the ticket for review, and preserved the complete audit trail. You can replay later to explore the revision or approval path.</p>
+        <GuideProgress milestone={3} />
+        <button type="button" className={styles.primaryButton} onClick={dismissGuide}>
+          Finish tutorial <ArrowRight size={16} />
+        </button>
+      </aside>
+    );
+  }
+
+  const completedTitle = finalStepComplete
+    ? "Repair tutorial complete."
+    : declinedDecision
+      ? "Decision recorded. Choose the next path."
+      : "Nice work. Ready for the next step?";
 
   return (
     <aside className={styles.questPanel} aria-live="polite" aria-label="Interactive RepairFlow tutorial">
@@ -160,20 +196,27 @@ export function WorkspaceGuide({ replaySignal }: { replaySignal: number }) {
       </button>
       <div className={styles.questHeader}>
         <span><Sparkles size={14} /> Interactive tutorial</span>
-        <small>{step + 1} / {questSteps.length}</small>
+        <small>Step {completedTasks + 1}</small>
       </div>
-      <p className={styles.eyebrow}>{stepComplete ? "Task completed" : quest.eyebrow}</p>
-      <h2>{stepComplete ? (step === questSteps.length - 1 ? "Repair tutorial complete." : "Nice work. Ready for the next step?") : quest.title}</h2>
-      <p>{stepComplete ? completedMessage(step) : quest.text}</p>
-      <div className={styles.guideProgress} aria-label={`Tutorial step ${step + 1} of ${questSteps.length}`}>
-        {questSteps.map((item, index) => (
-          <span key={item.title} className={index <= step ? styles.guideDotActive : styles.guideDot} />
-        ))}
-      </div>
+      <p className={styles.eyebrow}>{stepComplete ? "Task completed" : step.eyebrow}</p>
+      <h2>{stepComplete ? completedTitle : step.title}</h2>
+      <p>{stepComplete ? tutorialCompletedMessage(stepId, state) : step.text}</p>
+      <GuideProgress milestone={step.milestone} complete={finalStepComplete} />
       {stepComplete ? (
-        <button type="button" className={styles.primaryButton} onClick={continueQuest}>
-          {step === questSteps.length - 1 ? "Finish tutorial" : "Continue"} <ArrowRight size={16} />
-        </button>
+        declinedDecision ? (
+          <div className={styles.questBranchActions}>
+            <button type="button" className={styles.primaryButton} onClick={continueQuest}>
+              Follow revision workflow <GitBranch size={16} />
+            </button>
+            <button type="button" className={styles.secondaryButton} onClick={finishDeclinedPath}>
+              Finish with quote declined
+            </button>
+          </div>
+        ) : (
+          <button type="button" className={styles.primaryButton} onClick={continueQuest}>
+            {finalStepComplete ? "Finish tutorial" : "Continue"} <ArrowRight size={16} />
+          </button>
+        )
       ) : (
         <span className={styles.questWaiting}><i /> Waiting for you to complete this task</span>
       )}
@@ -181,10 +224,16 @@ export function WorkspaceGuide({ replaySignal }: { replaySignal: number }) {
   );
 }
 
-function completedMessage(step: number) {
-  if (step === 0) return "You opened the same ticket data from the customer's point of view.";
-  if (step === 1) return "The approval moved the repair forward and added a new timeline event.";
-  if (step === 2) return "You are now looking at the approved job from the workshop side.";
-  if (step === 3) return "RepairFlow moved the job onto the workbench and refreshed its operational metrics.";
-  return "You documented the finished work and returned the device to the customer handoff queue.";
+function GuideProgress({ milestone, complete = false }: { milestone: number; complete?: boolean }) {
+  return (
+    <div className={styles.guideProgress} aria-label={`Tutorial workflow phase ${milestone + 1} of ${TUTORIAL_MILESTONES.length}`}>
+      {TUTORIAL_MILESTONES.map((label, index) => (
+        <span
+          key={label}
+          title={label}
+          className={complete || index < milestone ? styles.guideDotComplete : index === milestone ? styles.guideDotActive : styles.guideDot}
+        />
+      ))}
+    </div>
+  );
 }

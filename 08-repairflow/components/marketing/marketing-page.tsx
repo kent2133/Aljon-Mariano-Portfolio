@@ -105,7 +105,8 @@ function ArrowIcon() {
 
 export function MarketingPage() {
   const rootRef = useRef<HTMLElement>(null);
-  const [activeStage, setActiveStage] = useState(0);
+  const [activeStage, setActiveStage] = useState(-1);
+  const activeWorkflow = activeStage >= 0 ? workflow[activeStage] : null;
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -275,14 +276,17 @@ export function MarketingPage() {
             </div>
 
             <div className={styles.sceneCaption} aria-live="polite">
-              <span className={styles.sceneNumber}>{workflow[activeStage].number}</span>
+              <span className={styles.sceneNumber}>{activeWorkflow?.number ?? "00"}</span>
               <span>
-                <small>Current stage</small>
-                {workflow[activeStage].label}
+                <small>{activeWorkflow ? "Current stage" : "System overview"}</small>
+                {activeWorkflow?.label ?? "Connected repair record"}
               </span>
             </div>
 
-            <div className={styles.progressDots} aria-label={`Workflow stage ${activeStage + 1} of ${workflow.length}`}>
+            <div
+              className={styles.progressDots}
+              aria-label={activeWorkflow ? `Workflow stage ${activeStage + 1} of ${workflow.length}` : "Workflow overview. Scroll to begin stage one."}
+            >
               {workflow.map((step, index) => (
                 <span
                   key={step.label}
@@ -292,7 +296,7 @@ export function MarketingPage() {
               ))}
             </div>
 
-            <p className={styles.sceneHint}>Scroll to inspect the service layers</p>
+            <p className={styles.sceneHint}>{activeWorkflow ? "Keep scrolling to inspect the next service layer" : "Scroll to begin the workflow"}</p>
           </div>
         </aside>
       </div>

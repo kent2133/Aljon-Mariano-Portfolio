@@ -11,7 +11,7 @@ import {
   type Dispatch,
   type ReactNode,
 } from "react";
-import { createSeedState, DEMO_CUSTOMER_ID, DEMO_TECHNICIAN_ID } from "./repair-data";
+import { createSeedState, createTutorialState, DEMO_CUSTOMER_ID, DEMO_TECHNICIAN_ID } from "./repair-data";
 import type {
   RepairAction,
   RepairActivity,
@@ -83,6 +83,7 @@ function updateTechnicianLoad(
 
 export function repairReducer(state: RepairState, action: RepairAction): RepairState {
   if (action.type === "hydrate") return action.state;
+  if (action.type === "start-tutorial") return createTutorialState();
   if (action.type === "reset-demo") return createSeedState();
 
   if (action.type === "set-role") {
